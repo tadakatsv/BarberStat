@@ -1,0 +1,47 @@
+server:
+  port: 8080
+
+spring:
+  mvc:
+    problem-details:
+      enabled: true
+  application:
+    name: barber-stat
+
+  datasource:
+    url: your_url
+    username: your_username
+    password: your_password
+    driver-class-name: org.postgresql.Driver
+
+  # Настройки Hibernate / JPA
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true # Красивое форматирование SQL в логах
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: html
+
+logging:
+  file:
+    name: logs/barberstat_app.log
+  logback:
+    rolling-policy:
+      file-name-pattern: "logs/archived/barberstat_%d{yyyy-MM-dd}_%i.log.gz"
+      max-file-size: 10MB
+      total-size-cap: 100MB
+  level:
+    root: INFO
+    ua.chekmaryov.barberstat: DEBUG # Логи твоего кода будут подробными
+    org.hibernate.SQL: DEBUG

@@ -1,0 +1,635 @@
+package ua.chekmaryov.barber_stat.service;
+
+import ua.chekmaryov.barber_stat.dto.ApiResponse;
+import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoCreateRequest;
+import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
+import ua.chekmaryov.barber_stat.entity.Barber;
+import ua.chekmaryov.barber_stat.enums.BarberStatus;
+
+import java.util.List;
+
+public interface BarberService {
+    ApiResponse<BarberDtoResponse> create(BarberDtoRequest request);
+    ApiResponse<List<BarberDtoResponse>> getAll();
+    ApiResponse<BarberDtoResponse> getById(Long id);
+    ApiResponse<BarberDtoResponse> updateById(Long id, BarberDtoRequest request);
+    ApiResponse<BarberDtoResponse> deleteById(Long id);
+    ApiResponse<List<BarberDtoResponse>> findByFirstNameAndSecondName(String firstName, String lastName);
+    ApiResponse<List<BarberDtoResponse>> findByStatus(BarberStatus status);
+}
+package ua.chekmaryov.barber_stat.service;
+
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import ua.chekmaryov.barber_stat.dto.ApiResponse;
+import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoCreateRequest;
+import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
+import ua.chekmaryov.barber_stat.entity.Barber;
+import ua.chekmaryov.barber_stat.enums.BarberStatus;
+import ua.chekmaryov.barber_stat.mapper.BarberMapper;
+import ua.chekmaryov.barber_stat.repository.BarberRepository;
+
+import java.util.List;
+
+@Slf4j
+@Service
+public class BarberServiceImpl implements BarberService{
+
+    private final BarberRepository barberRepository;
+    private final BarberMapper barberMapper;
+
+    public BarberServiceImpl(
+                               BarberRepository barberRepository,
+                               BarberMapper barberMapper){
+        this.barberRepository=barberRepository;
+        this.barberMapper=barberMapper;
+    }
+
+    @Override
+    @Transactional
+    public ApiResponse<BarberDtoResponse> create(BarberDtoRequest request) {
+        log.info("Attempting to create a new barber:{} {}",request.firstName(),request.lastName());
+
+        Barber barber = barberRepository.saveAndFlush(barberMapper.dtoToEntity(request));
+        log.debug("Barber successfully saved with ID: {}", barber.getId());
+
+        return ApiResponse.<BarberDtoResponse>builder()
+                .status(HttpStatus.CREATED.value())
+                .message(HttpStatus.CREATED.getReasonPhrase())
+                .data(barberMapper.toResponse(barber))
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public ApiResponse<List<BarberDtoResponse>> getAll() {
+        log.info("Request to fetch all barbers");
+
+        List<BarberDtoResponse> allBarbers = barberMapper.toResponseList(barberRepository.findAll());
+        log.debug("Retrieved {} records from database",allBarbers.size());
+
+        return ApiResponse.<List<BarberDtoResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Barber list retrieved successfully")
+                .data(allBarbers)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public ApiResponse<BarberDtoResponse> getById(Long id) {
+        log.info("Searching for barber with id: {}" ,id);
+        Barber barber = barberRepository.findById(id).orElseThrow();//ResourceNotFoundException сделать
+        log.debug("Successfully found barber: {} (ID: {})", barber.getLastName(), id);
+        return ApiResponse.<BarberDtoResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message("Barber found")
+                .data(barberMapper.toResponse(barber))
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public ApiResponse<BarberDtoResponse> updateById(Long id, BarberDtoRequest request) {
+        log.info("Updating barber with ID: {}", id);
+        Barber barber = barberRepository.findById(id).orElseThrow();
+        Barber updated = barberRepository.save(barberMapper.dtoUpdateToEntity(id,request,barber));
+        log.debug("Barber ID {} successfully updated", id);
+        return ApiResponse.<BarberDtoResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message("Updated barber by ID: " + id)
+                .data(barberMapper.toResponse(updated))
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public ApiResponse<BarberDtoResponse> deleteById(Long id) {
+        log.info("Attempting to soft delete barber with ID: {}", id);
+        Barber barber = barberRepository.findById(id).orElseThrow();
+        barber.setStatus(BarberStatus.FIRED);
+        log.debug("Barber ID {} status changed to FIRED", id);
+        return ApiResponse.<BarberDtoResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.getReasonPhrase())
+                .data(barberMapper.toResponse(barber))
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public ApiResponse<List<BarberDtoResponse>> findByFirstNameAndSecondName(String firstName, String lastName) {
+        log.info("Searching for barbers with filter: firstName={}, lastName={}", firstName, lastName);
+
+
+        List<BarberDtoResponse> foundBarbers = barberMapper.toResponseList(barberRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(firstName,lastName));
+        log.debug("Search complete. Found {} barbers matching the criteria", foundBarbers.size());
+        return ApiResponse.<List<BarberDtoResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.getReasonPhrase())
+                .data(foundBarbers)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public ApiResponse<List<BarberDtoResponse>> findByStatus(BarberStatus status) {
+        log.info("Fetching barbers with status: {}", status);
+        List<BarberDtoResponse> foundBarbers = barberMapper.toResponseList(barberRepository.findBarbersByStatusIs(status));
+        return ApiResponse.<List<BarberDtoResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.getReasonPhrase())
+                .data(foundBarbers)
+                .build();
+    }
+}
+package ua.chekmaryov.barber_stat;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class BarberStatApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(BarberStatApplication.class, args);
+	}
+
+}
+package ua.chekmaryov.barber_stat.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ApiResponse<T> {
+    private int status;
+    private String message;
+    private T data;
+    @Builder.Default
+    private LocalDateTime timestamp = LocalDateTime.now();
+}package ua.chekmaryov.barber_stat.dto;
+
+
+import ua.chekmaryov.barber_stat.enums.BarberStatus;
+
+import java.time.LocalDate;
+
+public record BarberDtoRequest (
+    String firstName,
+    String lastName,
+    String phone,
+    LocalDate birthDate,
+    BarberStatus barberStatus,
+    String notes
+    ){
+}
+package ua.chekmaryov.barber_stat.dto;
+
+import lombok.Builder;
+import ua.chekmaryov.barber_stat.enums.BarberStatus;
+import java.time.LocalDate;
+
+@Builder
+public record BarberDtoResponse(
+        Long id,
+        String fullName,
+        String phone,
+        LocalDate birthDate,
+        BarberStatus status,
+        String notes
+) {}package ua.chekmaryov.barber_stat.enums;
+
+public enum ClientStatus {
+    ACTIVE,
+    INACTIVE,
+    BLACKLISTED
+}
+package ua.chekmaryov.barber_stat.enums;
+
+public enum BarberStatus {
+    ACTIVE,
+    INACTIVE,
+    VACATION,
+    FIRED
+}
+package ua.chekmaryov.barber_stat.enums;
+
+public enum VisitStatus {
+    PLANNED,
+    COMPLETED,
+    CANCELLED,
+    NO_SHOW
+}package ua.chekmaryov.barber_stat.mapper;
+
+import org.jspecify.annotations.NonNull;
+import org.springframework.stereotype.Component;
+import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoCreateRequest;
+import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
+import ua.chekmaryov.barber_stat.entity.Barber;
+
+import java.util.List;
+
+@Component
+public class BarberMapper {
+
+    public Barber dtoToEntity(BarberDtoRequest request){
+        Barber barber = new Barber();
+        return getBarber(request, barber);
+    }
+
+    public Barber dtoUpdateToEntity(Long id, BarberDtoRequest request, Barber toUpdate){
+        toUpdate.setId(id);
+        if (request.firstName() != null) toUpdate.setFirstName(request.firstName());
+        if (request.lastName() != null) toUpdate.setLastName(request.lastName());
+        if (request.phone() != null) toUpdate.setPhone(request.phone());
+        if (request.birthDate() != null) toUpdate.setBirthDate(request.birthDate());
+        if (request.barberStatus() != null) toUpdate.setStatus(request.barberStatus());
+        if (request.notes() != null) toUpdate.setNotes(request.notes());
+        return toUpdate;
+    }
+
+    @NonNull
+    private Barber getBarber(BarberDtoRequest request, Barber toUpdate) {
+        toUpdate.setFirstName(request.firstName());
+        toUpdate.setLastName(request.lastName());
+        toUpdate.setPhone(request.phone());
+        toUpdate.setBirthDate(request.birthDate());
+        toUpdate.setStatus(request.barberStatus());
+        toUpdate.setNotes(request.notes());
+        return toUpdate;
+    }
+
+    public BarberDtoResponse toResponse(Barber barber) {
+        if (barber == null) return null;
+        return BarberDtoResponse.builder()
+                .id(barber.getId())
+                .fullName(barber.getFirstName() + " " + barber.getLastName())
+                .phone(barber.getPhone())
+                .status(barber.getStatus())
+                .birthDate(barber.getBirthDate())
+                .notes(barber.getNotes())
+                .build();
+    }
+
+    public List<BarberDtoResponse> toResponseList(List<Barber> barbers){
+        return barbers.stream().map(this::toResponse).toList();
+    }
+}
+package ua.chekmaryov.barber_stat.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ua.chekmaryov.barber_stat.entity.BarberOffering;
+import ua.chekmaryov.barber_stat.entity.Offer;
+
+import java.math.BigDecimal;
+import java.util.Optional;
+
+@Repository
+public interface BarberOfferingRepository extends JpaRepository<BarberOffering,Long> {
+    Optional<BarberOffering> findByBarberIdAndOfferId(Long barberId, Long offerId);
+}
+package ua.chekmaryov.barber_stat.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+import ua.chekmaryov.barber_stat.entity.Client;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface ClientRepository extends JpaRepository<Client, Long> {
+    Optional<Client> findClientByPhone(String phone);
+
+    List<Client> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName);
+}
+package ua.chekmaryov.barber_stat.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ua.chekmaryov.barber_stat.entity.Offer;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface OfferRepository extends JpaRepository<Offer,Long> {
+    List<Offer> findByNameContainingIgnoreCase(String name);
+}
+package ua.chekmaryov.barber_stat.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ua.chekmaryov.barber_stat.entity.Client;
+import ua.chekmaryov.barber_stat.entity.Visit;
+
+import java.time.Instant;
+import java.util.List;
+
+@Repository
+public interface VisitRepository extends JpaRepository<Visit, Long> {
+    List<Visit> findVisitByClientId(Long clientId);
+
+    List<Visit> findByClientIdAndVisitTimeBetween(Long clientId, Instant start, Instant end);
+
+    List<Visit> findByVisitTimeBetween(Instant start, Instant end);
+
+    List<Visit> findByBarberIdAndVisitTimeBetween(Long barberId, Instant start, Instant end);
+
+    boolean existsByBarberIdAndVisitTime(Long barberId, Instant visitTime);
+}
+package ua.chekmaryov.barber_stat.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ua.chekmaryov.barber_stat.entity.Barber;
+import ua.chekmaryov.barber_stat.enums.BarberStatus;
+
+import java.util.List;
+
+@Repository
+public interface BarberRepository extends JpaRepository<Barber,Long> {
+    List<Barber> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName);
+
+    List<Barber> findBarbersByStatusIs(BarberStatus status);
+}
+package ua.chekmaryov.barber_stat.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import ua.chekmaryov.barber_stat.dto.ApiResponse;
+import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoCreateRequest;
+import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
+import ua.chekmaryov.barber_stat.enums.BarberStatus;
+import ua.chekmaryov.barber_stat.service.BarberService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/barbers")
+public class BarberController {
+    private final BarberService service;
+
+    public BarberController(BarberService service) {
+        this.service = service;
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<BarberDtoResponse>> createBarber(
+            @RequestBody BarberDtoRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.create(request));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<BarberDtoResponse>>> getAllBarbers(){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.getAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<BarberDtoResponse>> getBarberById(@PathVariable("id") Long id){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.getById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<BarberDtoResponse>> updateBarberById(@PathVariable("id") Long id, @RequestBody BarberDtoRequest request){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.updateById(id,request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<BarberDtoResponse>> deleteBarberById(@PathVariable("id") Long id){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.deleteById(id));
+    }
+
+    @GetMapping("/by-first-name-and-second-name")
+    public ResponseEntity<ApiResponse<List<BarberDtoResponse>>> findBarberByFirstNameAndSecondName(
+            @RequestParam("firstName") final String firstName,
+            @RequestParam("secondName") String secondName) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.findByFirstNameAndSecondName(firstName,secondName));
+    }
+
+    @GetMapping("/by-status")
+    public ResponseEntity<ApiResponse<List<BarberDtoResponse>>> findBarbersByStatus(
+            @RequestParam("status") final BarberStatus status) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.findByStatus(status));
+    }
+}
+    package ua.chekmaryov.barber_stat.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ua.chekmaryov.barber_stat.enums.ClientStatus;
+
+import java.time.LocalDate;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "clients")
+public class Client {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "phone", nullable = false, unique = true)
+    private String phone;
+
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+
+    @Column(name = "barberStatus", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ClientStatus status = ClientStatus.ACTIVE;
+
+    @Column(name = "notes")
+    private String notes;
+}
+package ua.chekmaryov.barber_stat.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ua.chekmaryov.barber_stat.enums.VisitStatus;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+
+@Entity
+@Table(name = "visits")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Visit {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
+
+    // Связь с мастером
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "barber_id", nullable = false)
+    private Barber barber;
+
+    // Связь с типом услуги
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_id", nullable = false)
+    private Offer offer;
+
+    @Column(name = "visit_time")
+    private Instant visitTime;
+
+    @Column(name = "actual_price")
+    private BigDecimal actualPrice;
+
+    @Column(name = "barberStatus")
+    @Enumerated(EnumType.STRING)
+    private VisitStatus status = VisitStatus.PLANNED;
+
+    @Column(name = "notes")
+    private String notes;
+}
+package ua.chekmaryov.barber_stat.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ua.chekmaryov.barber_stat.enums.BarberStatus;
+
+import java.time.LocalDate;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "barbers")
+public class Barber {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "phone", nullable = false, unique = true)
+    private String phone;
+
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+
+    @Column(name = "barberStatus", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private BarberStatus status = BarberStatus.ACTIVE;
+
+    @Column(name = "notes")
+    private String notes;
+}
+package ua.chekmaryov.barber_stat.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "services")
+public class Offer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "name",unique = true, nullable = false)
+    private String name;
+}
+package ua.chekmaryov.barber_stat.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = "barber_services")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class BarberOffering {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    // Связь с мастером
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "barber_id", nullable = false)
+    private Barber barber;
+
+    // Связь с типом услуги
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_id", nullable = false)
+    private Offer offer;
+
+    @Column(name = "price",nullable = false)
+    private BigDecimal price;
+}package ua.chekmaryov.barber_stat;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class BarberStatApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
