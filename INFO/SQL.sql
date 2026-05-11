@@ -11,14 +11,15 @@ CREATE TABLE IF NOT EXISTS barbers (
     );
 
 CREATE TABLE IF NOT EXISTS clients (
-                            id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                            first_name VARCHAR(50) NOT NULL,
-                            last_name VARCHAR(50),
-                            phone VARCHAR(20) NOT NULL UNIQUE,
-                            birth_date DATE,
-                            status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
-                            notes TEXT
-);
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50),
+    phone VARCHAR(20) NOT NULL UNIQUE,
+    birth_date DATE,
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    last_visit_date DATE,
+    notes TEXT
+    );
 
 CREATE TABLE IF NOT EXISTS services (
                             id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
