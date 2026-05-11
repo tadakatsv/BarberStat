@@ -32,7 +32,6 @@ public class BarberController {
 
     @GetMapping
     public Page<BarberDtoResponse> getAllBarbers(@ParameterObject @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC)Pageable pageable){
-        log.info("Retrieved {}");
         return service.getAll(pageable);
     }
 
