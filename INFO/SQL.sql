@@ -45,3 +45,12 @@ CREATE TABLE IF NOT EXISTS visits (
     status VARCHAR(20) NOT NULL DEFAULT 'PLANNED',
     notes TEXT
     );
+
+CREATE TABLE IF NOT EXISTS salaries (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    barber_id BIGINT NOT NULL REFERENCES barbers(id),
+    period_start DATE NOT NULL,
+    period_end DATE NOT NULL,
+    total_sum DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING' -- PAID, PENDING
+    );
