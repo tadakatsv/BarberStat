@@ -1,19 +1,21 @@
 package ua.chekmaryov.barber_stat.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-import ua.chekmaryov.barber_stat.dto.ApiResponse;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoCreateRequest;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoUpdateRequest;
 import ua.chekmaryov.barber_stat.enums.BarberStatus;
 import ua.chekmaryov.barber_stat.service.BarberService;
 
-import java.util.List;
-
 @RestController
+@Slf4j
 @RequestMapping("/api/v1/barbers")
 public class BarberController {
     private final BarberService service;
@@ -23,49 +25,45 @@ public class BarberController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<BarberDtoResponse>> createBarber(
+    public BarberDtoResponse createBarber(
             @Valid @RequestBody BarberDtoCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(service.create(request));
+        return service.create(request);
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<BarberDtoResponse>>> getAllBarbers(){
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(service.getAll());
+    public Page<BarberDtoResponse> getAllBarbers(@ParameterObject @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC)Pageable pageable){
+        log.info("Retrieved {}");
+        return service.getAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<BarberDtoResponse>> getBarberById(@PathVariable("id") Long id){
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(service.getById(id));
+    public BarberDtoResponse getBarberById(@PathVariable("id") Long id){
+        return service.getById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<BarberDtoResponse>> updateBarberById(@PathVariable("id") Long id, @Valid @RequestBody BarberDtoUpdateRequest request){
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(service.updateById(id,request));
+    public BarberDtoResponse updateBarberById(@PathVariable("id") Long id, @Valid @RequestBody BarberDtoUpdateRequest request){
+        return service.updateById(id,request);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<BarberDtoResponse>> deleteBarberById(@PathVariable("id") Long id){
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(service.deleteById(id));
+    public BarberDtoResponse deleteBarberById(@PathVariable("id") Long id){
+        return service.deleteById(id);
     }
 
     @GetMapping("/by-first-name-and-second-name")
-    public ResponseEntity<ApiResponse<List<BarberDtoResponse>>> findBarberByFirstNameAndLastName(
+    public Page<BarberDtoResponse> findBarberByFirstNameAndLastName(
             @RequestParam("firstName") final String firstName,
-            @RequestParam("lastName") String lastName) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(service.findByFirstNameAndLastName(firstName, lastName));
+            @RequestParam("lastName") String lastName,
+            @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable) {
+        return service.findByFirstNameAndLastName(firstName, lastName,pageable);
     }
 
     @GetMapping("/by-status")
-    public ResponseEntity<ApiResponse<List<BarberDtoResponse>>> findBarbersByStatus(
-            @RequestParam("status") final BarberStatus status) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(service.findByStatus(status));
+    public Page<BarberDtoResponse> findBarbersByStatus(
+            @RequestParam("status") final BarberStatus status,
+            @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable) {
+        return service.findByStatus(status,pageable);
     }
 }
     

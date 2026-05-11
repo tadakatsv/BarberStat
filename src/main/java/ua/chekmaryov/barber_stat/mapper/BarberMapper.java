@@ -6,8 +6,6 @@ import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoUpdateRequest;
 import ua.chekmaryov.barber_stat.entity.Barber;
 
-import java.util.List;
-
 @Component
 public class BarberMapper {
 
