@@ -15,8 +15,7 @@ public class BarberMapper {
         return updateEntityFromDto(request, new Barber());
     }
 
-    public Barber dtoUpdateToEntity(Long id, BarberDtoUpdateRequest request, Barber toUpdate) {
-        toUpdate.setId(id);
+    public Barber dtoUpdateToEntity(BarberDtoUpdateRequest request, Barber toUpdate) {
         return updateEntityFromDto(request, toUpdate);
     }
 
