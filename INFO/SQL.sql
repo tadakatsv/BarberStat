@@ -1,14 +1,14 @@
-CREATE DATABASE barber_db;
-
 CREATE TABLE IF NOT EXISTS barbers (
-                         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                         first_name VARCHAR(50) NOT NULL,
-                         last_name VARCHAR(50),
-                         phone VARCHAR(20) NOT NULL UNIQUE,
-                         birth_date DATE,
-                         status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
-                         notes TEXT
-);
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50),
+    phone VARCHAR(20) NOT NULL UNIQUE,
+    birth_date DATE,
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    barber_role VARCHAR(20) NOT NULL,
+    salary_percent INT NOT NULL DEFAULT 50 CHECK (salary_percent BETWEEN 0 AND 100),
+    notes TEXT
+    );
 
 CREATE TABLE IF NOT EXISTS clients (
                             id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
