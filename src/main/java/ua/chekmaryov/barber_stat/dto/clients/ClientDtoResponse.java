@@ -13,6 +13,7 @@ public record ClientDtoResponse(
         String phone,
         LocalDate birthDate,
         ClientStatus status,
+        LocalDate lastVisitDate,
         String notes
 ) {
 }

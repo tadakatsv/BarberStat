@@ -10,6 +10,7 @@ public record ClientDtoUpdateRequest(
         String phone,
         LocalDate birthDate,
         ClientStatus status,
+        LocalDate lastVisitDate,
         String notes
 ) {
 }

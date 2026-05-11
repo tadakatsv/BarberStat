@@ -12,6 +12,7 @@ public record ClientDtoCreateRequest(
         @NotBlank(message = "Phone number is required") String phone,
         @NotNull(message = "Birth date is required") LocalDate birthDate,
         ClientStatus status,
+        LocalDate lastVisitDate,
         String notes
 ) {
 }
