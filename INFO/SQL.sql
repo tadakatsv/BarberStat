@@ -35,12 +35,13 @@ CREATE TABLE IF NOT EXISTS barber_services (
 );
 
 CREATE TABLE IF NOT EXISTS visits (
-                            id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                            client_id BIGINT NOT NULL REFERENCES clients(id),
-                            barber_id BIGINT NOT NULL REFERENCES barbers(id),
-                            service_id BIGINT NOT NULL REFERENCES services(id),
-                            visit_time TIMESTAMPTZ NOT NULL,
-                            actual_price DECIMAL(10, 2) NOT NULL,
-                            status VARCHAR(20) NOT NULL DEFAULT 'PLANNED',
-                            notes TEXT
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    client_id BIGINT NOT NULL REFERENCES clients(id),
+    barber_id BIGINT NOT NULL REFERENCES barbers(id),
+    service_id BIGINT NOT NULL REFERENCES services(id),
+    visit_time TIMESTAMPTZ NOT NULL,
+    actual_price DECIMAL(10, 2) NOT NULL,
+    actual_percent_barber INT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PLANNED',
+    notes TEXT
     );
