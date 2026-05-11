@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ua.chekmaryov.barber_stat.enums.BarberRole;
 import ua.chekmaryov.barber_stat.enums.BarberStatus;
 
 import java.time.LocalDate;
@@ -35,6 +36,13 @@ public class Barber {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private BarberStatus status = BarberStatus.ACTIVE;
+
+    @Column(name = "barber_role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private BarberRole role;
+
+    @Column(name = "salary_percent",nullable = false)
+    private Integer salaryPercent = 50;
 
     @Column(name = "notes")
     private String notes;

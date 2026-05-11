@@ -26,6 +26,8 @@ public class BarberMapper {
         toUpdate.setPhone(request.phone());
         toUpdate.setBirthDate(request.birthDate());
         if (request.status() != null) toUpdate.setStatus(request.status());
+        toUpdate.setRole(request.role());
+        toUpdate.setSalaryPercent(request.salaryPercent());
         toUpdate.setNotes(request.notes());
         return toUpdate;
     }
@@ -36,6 +38,8 @@ public class BarberMapper {
         if (request.phone() != null) toUpdate.setPhone(request.phone());
         if (request.birthDate() != null) toUpdate.setBirthDate(request.birthDate());
         if (request.status() != null) toUpdate.setStatus(request.status());
+        if (request.role() != null) toUpdate.setRole(request.role());
+        if (request.salaryPercent() != null) toUpdate.setSalaryPercent(request.salaryPercent());
         if (request.notes() != null) toUpdate.setNotes(request.notes());
         return toUpdate;
     }
@@ -48,11 +52,10 @@ public class BarberMapper {
                 .phone(barber.getPhone())
                 .status(barber.getStatus())
                 .birthDate(barber.getBirthDate())
+                .role(barber.getRole())
+                .salaryPercent(barber.getSalaryPercent())
                 .notes(barber.getNotes())
                 .build();
     }
 
-    public List<BarberDtoResponse> toResponseList(List<Barber> barbers){
-        return barbers.stream().map(this::toResponse).toList();
-    }
 }
