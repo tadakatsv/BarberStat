@@ -1,6 +1,0 @@
-dbDriver=org.postgresql.Driver
-dbUrl=jdbc:postgresql://localhost:5432/postgres
-username=postgres
-hibernate.show_sql=true
-hibernate.format_sql=true
-hibernate.hbm2ddl.auto=update
