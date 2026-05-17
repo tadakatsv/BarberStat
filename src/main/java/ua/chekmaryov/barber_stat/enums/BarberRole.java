@@ -1,7 +1,7 @@
 package ua.chekmaryov.barber_stat.enums;
 
 public enum BarberRole {
-    INTERN,
+    APPRENTICE,
     MIDDLE,
     TOP,
     SENIOR
