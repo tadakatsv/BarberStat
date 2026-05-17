@@ -2,10 +2,12 @@ package ua.chekmaryov.barber_stat.dto.clients;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import ua.chekmaryov.barber_stat.enums.ClientStatus;
 
 import java.time.LocalDate;
 
+@Builder
 public record ClientDtoCreateRequest(
         @NotBlank(message = "First name is required") String firstName,
         @NotBlank(message = "Last name is required") String lastName,
