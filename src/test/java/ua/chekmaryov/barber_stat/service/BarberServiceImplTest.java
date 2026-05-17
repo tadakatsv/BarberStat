@@ -1,9 +1,6 @@
 package ua.chekmaryov.barber_stat.service;
 
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -33,7 +30,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BarberServiceImplTest {
 
     @Mock
@@ -45,14 +41,12 @@ public class BarberServiceImplTest {
     @InjectMocks
     private BarberServiceImpl barberService;
 
-    @Order(1)
     @Test
     public void getAll_ShouldReturnPageOfResponses_WhenBarbersExist(){
         // 1. ARRANGE
         Pageable pageable = PageRequest.of(0, 10); // Перша сторінка, 10 записів
 
-        Barber barber = new Barber();
-        barber.setId(1L);
+        Barber barber = new Barber(1L,"Артур","Морган","380666666666",LocalDate.of(1868, Month.JUNE,22),BarberStatus.ACTIVE,BarberRole.TOP,50,null);
 
         // Створюємо "фейкову" сторінку з одним барбером
         Page<Barber> barberPage = new PageImpl<>(List.of(barber), pageable, 1);
@@ -85,7 +79,6 @@ public class BarberServiceImplTest {
         verify(barberMapper, times(1)).toResponse(any(Barber.class));
     }
 
-    @Order(2)
     @Test
     public void getAll_ShouldReturnEmpty_WhenBarbersDontExist(){
         // 1. ARRANGE
@@ -107,7 +100,6 @@ public class BarberServiceImplTest {
         verify(barberMapper, times(0)).toResponse(any(Barber.class));
     }
 
-    @Order(3)
     @Test
     public void create_ShouldReturnBarberDtoResponse_whenNoBarberByPhone(){
         // 1. ARRANGE
@@ -153,7 +145,6 @@ public class BarberServiceImplTest {
         verify(barberMapper, times(1)).toResponse(barberAfter);
     }
 
-    @Order(4)
     @Test
     public void create_ShouldThrowAlreadyExistsException_WhenPhoneAlreadyRegistered(){
         BarberDtoCreateRequest request = BarberDtoCreateRequest.builder()
@@ -183,7 +174,6 @@ public class BarberServiceImplTest {
         verify(barberMapper, times(0)).toResponse(any(Barber.class));
     }
 
-    @Order(5)
     @Test
     public void getById_ShouldReturnDtoResponse_WhenBarberById(){
         Long id = 1L;
@@ -212,7 +202,6 @@ public class BarberServiceImplTest {
 
     }
 
-    @Order(6)
     @Test
     public void getById_ShouldReturnDtoResponse_WhenNoBarberById(){
         Long id = 1L;
@@ -229,7 +218,6 @@ public class BarberServiceImplTest {
         verify(barberMapper, times(0)).toResponse(any(Barber.class));
     }
 
-    @Order(7)
     @Test
     public void updateById_ShouldReturnDtoResponse_WhenBarberById(){
         Long id = 1L;
@@ -275,7 +263,6 @@ public class BarberServiceImplTest {
         verify(barberMapper).toResponse(barberFromRepostiry);
     }
 
-    @Order(8)
     @Test
     public void updateById_ShouldReturnDtoResponse_WhenNoBarberById(){
         Long id = 1L;
@@ -304,7 +291,6 @@ public class BarberServiceImplTest {
         verify(barberMapper, times(0)).toResponse(any(Barber.class));
     }
 
-    @Order(9)
     @Test
     public void deleteById_ShouldReturnDtoResponse_WhenBarberById(){
         Long id = 1L;
@@ -334,7 +320,6 @@ public class BarberServiceImplTest {
         verify(barberMapper).toResponse(barber);
     }
 
-    @Order(10)
     @Test
     public void deleteById_ShouldReturnDtoResponse_WhenNoBarberById(){
         Long id = 1L;
@@ -351,7 +336,6 @@ public class BarberServiceImplTest {
         verify(barberMapper, times(0)).toResponse(any(Barber.class));
     }
 
-    @Order(11)
     @Test
     public void findByFirstNameAndLastName_ShouldReturnPageOfResponses_WhenBarbersExist(){
         // 1. ARRANGE
@@ -389,7 +373,6 @@ public class BarberServiceImplTest {
         verify(barberMapper, times(1)).toResponse(any(Barber.class));
     }
 
-    @Order(12)
     @Test
     public void findByFirstNameAndLastName_ShouldReturnEmpty_WhenBarbersDontExist(){
         // 1. ARRANGE
@@ -411,7 +394,6 @@ public class BarberServiceImplTest {
         verify(barberMapper, times(0)).toResponse(any(Barber.class));
     }
 
-    @Order(13)
     @Test
     public void findByStatus_ShouldReturnPageOfResponses_WhenBarbersExist(){
         // 1. ARRANGE
@@ -449,7 +431,6 @@ public class BarberServiceImplTest {
         verify(barberMapper, times(1)).toResponse(any(Barber.class));
     }
 
-    @Order(14)
     @Test
     public void findByStatus_ShouldReturnEmpty_WhenBarbersDontExist(){
         // 1. ARRANGE
