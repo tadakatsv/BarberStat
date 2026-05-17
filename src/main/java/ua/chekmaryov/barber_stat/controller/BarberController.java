@@ -53,7 +53,7 @@ public class BarberController {
         return service.deleteById(id);
     }
 
-    @GetMapping("/by-first-name-and-second-name")
+    @GetMapping("/search/by-first-name-and-second-name")
     public Page<BarberDtoResponse> findBarberByFirstNameAndLastName(
             @ParameterObject
             @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
@@ -63,7 +63,7 @@ public class BarberController {
         return service.findByFirstNameAndLastName(firstName, lastName,pageable);
     }
 
-    @GetMapping("/by-status")
+    @GetMapping("/search/by-status")
     public Page<BarberDtoResponse> findBarbersByStatus(
             @ParameterObject
             @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
