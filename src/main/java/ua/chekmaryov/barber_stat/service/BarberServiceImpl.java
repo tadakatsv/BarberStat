@@ -17,6 +17,8 @@ import ua.chekmaryov.barber_stat.repository.BarberRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
+import java.util.Objects;
+
 
 @Slf4j
 @Service
@@ -36,7 +38,7 @@ public class BarberServiceImpl implements BarberService{
     @Transactional
     public BarberDtoResponse create(BarberDtoCreateRequest request) {
         log.info("Attempting to create a new barber:{} {}",request.firstName(),request.lastName());
-        if (barberRepository.existsByPhone(request.phone())){
+        if (barberRepository.existsByPhone(request.phone().replaceAll("\\s+",""))){
             throw new AlreadyExistsException("Barber with " + request.phone() +" already exists");
         }
         Barber barber = barberRepository.save(barberMapper.dtoToEntity(request));
@@ -71,6 +73,12 @@ public class BarberServiceImpl implements BarberService{
         log.info("Updating barber with ID: {}", id);
         Barber barber = barberRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Barber not found with id: " + id));
+        log.debug("Retrieved barber:{} {}", barber.getFirstName(), barber.getLastName());
+        if (!Objects.equals(barber.getPhone(), request.phone().replaceAll("\\s+",""))){
+            if(barberRepository.existsByPhone(request.phone().replaceAll("\\s+",""))){
+                throw new AlreadyExistsException("Barber with " + request.phone() +" already exists");
+            }
+        }
         Barber updated = barberRepository.save(barberMapper.dtoUpdateToEntity(request,barber));
         log.debug("Barber ID {} successfully updated", id);
         return barberMapper.toResponse(updated);
