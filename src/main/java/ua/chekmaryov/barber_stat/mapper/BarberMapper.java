@@ -18,9 +18,9 @@ public class BarberMapper {
     }
 
     private Barber updateEntityFromDto(BarberDtoCreateRequest request, Barber toUpdate) {
-        toUpdate.setFirstName(request.firstName());
-        toUpdate.setLastName(request.lastName());
-        toUpdate.setPhone(request.phone());
+        toUpdate.setFirstName(request.firstName().trim());
+        toUpdate.setLastName(request.lastName().trim());
+        toUpdate.setPhone(request.phone().replaceAll("\\s+",""));
         toUpdate.setBirthDate(request.birthDate());
         if (request.status() != null) toUpdate.setStatus(request.status());
         toUpdate.setRole(request.role());
@@ -30,9 +30,9 @@ public class BarberMapper {
     }
 
     private Barber updateEntityFromDto(BarberDtoUpdateRequest request, Barber toUpdate) {
-        if (request.firstName() != null) toUpdate.setFirstName(request.firstName());
-        if (request.lastName() != null) toUpdate.setLastName(request.lastName());
-        if (request.phone() != null) toUpdate.setPhone(request.phone());
+        if (request.firstName() != null) toUpdate.setFirstName(request.firstName().trim());
+        if (request.lastName() != null) toUpdate.setLastName(request.lastName().trim());
+        if (request.phone() != null) toUpdate.setPhone(request.phone().replaceAll("\\s+",""));
         if (request.birthDate() != null) toUpdate.setBirthDate(request.birthDate());
         if (request.status() != null) toUpdate.setStatus(request.status());
         if (request.role() != null) toUpdate.setRole(request.role());

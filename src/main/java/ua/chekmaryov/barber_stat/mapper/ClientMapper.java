@@ -13,26 +13,25 @@ public class ClientMapper {
         return updateEntityFromDto(request,new Client());
     }
 
-    public Client dtoUpdateToEntity(Long id,ClientDtoUpdateRequest request, Client toUpdate){
-        toUpdate.setId(id);
+    public Client dtoUpdateToEntity(ClientDtoUpdateRequest request, Client toUpdate){
         return updateEntityFromDto(request,toUpdate);
     }
 
     private Client updateEntityFromDto(ClientDtoCreateRequest request, Client toUpdate){
-        toUpdate.setFirstName(request.firstName());
-        toUpdate.setLastName(request.lastName());
-        toUpdate.setPhone(request.phone());
+        toUpdate.setFirstName(request.firstName().trim());
+        toUpdate.setLastName(request.lastName().trim());
+        toUpdate.setPhone(request.phone().replaceAll("\\s+",""));
         if (request.birthDate() != null) toUpdate.setBirthDate(request.birthDate());
         if (request.status() != null) toUpdate.setStatus(request.status());
-        toUpdate.setLastVisitDate(request.lastVisitDate());
+        if (request.lastVisitDate() != null)toUpdate.setLastVisitDate(request.lastVisitDate());
         toUpdate.setNotes(request.notes());
         return toUpdate;
     }
 
     private Client updateEntityFromDto(ClientDtoUpdateRequest request, Client toUpdate){
-        if(request.firstName() != null) toUpdate.setFirstName(request.firstName());
-        if(request.lastName() != null) toUpdate.setLastName(request.lastName());
-        if(request.phone() != null) toUpdate.setPhone(request.phone());
+        if(request.firstName() != null) toUpdate.setFirstName(request.firstName().trim());
+        if(request.lastName() != null) toUpdate.setLastName(request.lastName().trim());
+        if(request.phone() != null) toUpdate.setPhone(request.phone().replaceAll("\\s+",""));
         if (request.birthDate() != null) toUpdate.setBirthDate(request.birthDate());
         if (request.status() != null) toUpdate.setStatus(request.status());
         if(request.lastVisitDate() != null) toUpdate.setLastVisitDate(request.lastVisitDate());
