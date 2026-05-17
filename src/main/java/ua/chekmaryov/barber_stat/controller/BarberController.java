@@ -1,6 +1,7 @@
 package ua.chekmaryov.barber_stat.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -54,16 +55,20 @@ public class BarberController {
 
     @GetMapping("/by-first-name-and-second-name")
     public Page<BarberDtoResponse> findBarberByFirstNameAndLastName(
-            @RequestParam("firstName") final String firstName,
-            @RequestParam("lastName") String lastName,
-            @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable) {
+            @ParameterObject
+            @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam("firstName") @NotBlank(message = "First name is required")  String firstName,
+            @RequestParam("lastName") @NotBlank(message = "Second name is required") String lastName
+            ) {
         return service.findByFirstNameAndLastName(firstName, lastName,pageable);
     }
 
     @GetMapping("/by-status")
     public Page<BarberDtoResponse> findBarbersByStatus(
-            @RequestParam("status") final BarberStatus status,
-            @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable) {
+            @ParameterObject
+            @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam("status") BarberStatus status
+            ) {
         return service.findByStatus(status,pageable);
     }
 }
