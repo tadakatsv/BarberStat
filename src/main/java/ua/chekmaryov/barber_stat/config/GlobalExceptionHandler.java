@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
+import ua.chekmaryov.barber_stat.exception.BadRequestException;
 import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
 
 @Slf4j
@@ -25,4 +26,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,exception.getMessage());
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ProblemDetail handleBadRequestApiException(BadRequestException exception) {
+        log.error("ResourceNotFoundException! " , exception);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,exception.getMessage());
+    }
 }
