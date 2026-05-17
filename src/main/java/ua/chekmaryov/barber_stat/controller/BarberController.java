@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoCreateRequest;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
@@ -25,6 +26,7 @@ public class BarberController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public BarberDtoResponse createBarber(
             @Valid @RequestBody BarberDtoCreateRequest request) {
         return service.create(request);
