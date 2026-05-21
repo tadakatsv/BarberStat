@@ -177,14 +177,17 @@ public class BarberControllerTest {
                         .salaryPercent(50)
                         .notes(null)
                         .build();
+        Page<BarberDtoResponse> barberPage = new PageImpl<>(List.of(response));
 
-        when(barberService.getById(id)).thenReturn(response);
+        when(barberService.getAll(any(Pageable.class))).thenReturn(barberPage);
 
-        mockMvc.perform(get("/api/v1/barbers/1"))
+        mockMvc.perform(get("/api/v1/barbers"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id));
-        verify(barberService).getById(anyLong());
+                .andExpect(jsonPath("$.content[0].fullName").value("Артур Морган"));
+
+        verify(barberService).getAll(any(Pageable.class));
     }
+
 
     @Test
     public void getById_shouldReturn404_WhenBarberNotFoundById() throws Exception{
