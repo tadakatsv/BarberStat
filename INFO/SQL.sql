@@ -22,17 +22,18 @@ CREATE TABLE IF NOT EXISTS clients (
     );
 
 CREATE TABLE IF NOT EXISTS services (
-                            id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                            name VARCHAR(100) NOT NULL
-);
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+    );
 
 CREATE TABLE IF NOT EXISTS barber_services (
-                            id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                            barber_id BIGINT NOT NULL REFERENCES barbers(id) ON DELETE CASCADE,
-                            service_id BIGINT NOT NULL REFERENCES services(id) ON DELETE CASCADE,
-                            price DECIMAL(10, 2) NOT NULL,
-                            CONSTRAINT uk_barber_service UNIQUE (barber_id, service_id)
-);
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    barber_id BIGINT NOT NULL REFERENCES barbers(id) ON DELETE CASCADE,
+    service_id BIGINT NOT NULL REFERENCES services(id) ON DELETE CASCADE,
+    price DECIMAL(10, 2) NOT NULL,
+    custom_time BIGINT NOTNULL,
+    CONSTRAINT uk_barber_service UNIQUE (barber_id, service_id)
+    );
 
 CREATE TABLE IF NOT EXISTS visits (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
