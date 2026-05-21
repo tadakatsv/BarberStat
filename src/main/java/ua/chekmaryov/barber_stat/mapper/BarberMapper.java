@@ -23,21 +23,21 @@ public class BarberMapper {
         toUpdate.setPhone(request.phone().replaceAll("\\s+",""));
         toUpdate.setBirthDate(request.birthDate());
         if (request.status() != null) toUpdate.setStatus(request.status());
-        toUpdate.setRole(request.role());
-        toUpdate.setSalaryPercent(request.salaryPercent());
+        if (request.role() != null) toUpdate.setRole(request.role());
+        if (request.salaryPercent() != null)toUpdate.setSalaryPercent(request.salaryPercent());
         toUpdate.setNotes(request.notes());
         return toUpdate;
     }
 
     private Barber updateEntityFromDto(BarberDtoUpdateRequest request, Barber toUpdate) {
-        if (request.firstName() != null) toUpdate.setFirstName(request.firstName().trim());
-        if (request.lastName() != null) toUpdate.setLastName(request.lastName().trim());
-        if (request.phone() != null) toUpdate.setPhone(request.phone().replaceAll("\\s+",""));
+        if (request.firstName() != null && !request.firstName().isBlank()) toUpdate.setFirstName(request.firstName().trim());
+        if (request.lastName() != null && !request.lastName().isBlank()) toUpdate.setLastName(request.lastName().trim());
+        if (request.phone() != null && !request.phone().isBlank()) toUpdate.setPhone(request.phone().replaceAll("\\s+",""));
         if (request.birthDate() != null) toUpdate.setBirthDate(request.birthDate());
-        if (request.status() != null) toUpdate.setStatus(request.status());
-        if (request.role() != null) toUpdate.setRole(request.role());
+        if (request.status() != null ) toUpdate.setStatus(request.status());
+        if (request.role() != null ) toUpdate.setRole(request.role());
         if (request.salaryPercent() != null) toUpdate.setSalaryPercent(request.salaryPercent());
-        if (request.notes() != null) toUpdate.setNotes(request.notes());
+        if (request.notes() != null && !request.notes().isBlank()) toUpdate.setNotes(request.notes());
         return toUpdate;
     }
 
