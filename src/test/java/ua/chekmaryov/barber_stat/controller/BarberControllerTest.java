@@ -323,7 +323,19 @@ public class BarberControllerTest {
     }
 
     @Test
-    public void shouldReturnBarbersByFirstName() throws Exception{
+    public void deleteById_shouldReturn404_WhenDeleteBarberExists() throws Exception{
+        Long id = 1L;
+
+        when(barberService.deleteById(id)).thenThrow(new ResourceNotFoundException("Barber not found with id: " + id));
+
+        mockMvc.perform(delete("/api/v1/barbers/1"))
+                .andExpect(status().isNotFound());
+
+        verify(barberService).deleteById(anyLong());
+    }
+
+    @Test
+    public void findByFirstNameAndLastName_shouldReturn200_WhenSearchByNames() throws Exception{
         BarberDtoResponse response =
                 BarberDtoResponse.builder()
                         .id(1L)
