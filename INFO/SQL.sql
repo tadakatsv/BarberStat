@@ -21,25 +21,25 @@ CREATE TABLE IF NOT EXISTS clients (
     notes TEXT
     );
 
-CREATE TABLE IF NOT EXISTS services (
+CREATE TABLE IF NOT EXISTS offers (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(100) NOT NULL
     );
 
-CREATE TABLE IF NOT EXISTS barber_services (
+CREATE TABLE IF NOT EXISTS barber_offering (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     barber_id BIGINT NOT NULL REFERENCES barbers(id) ON DELETE CASCADE,
-    service_id BIGINT NOT NULL REFERENCES services(id) ON DELETE CASCADE,
+    offer_id BIGINT NOT NULL REFERENCES offers(id) ON DELETE CASCADE,
     price DECIMAL(10, 2) NOT NULL,
-    custom_time BIGINT NOTNULL,
-    CONSTRAINT uk_barber_service UNIQUE (barber_id, service_id)
+    custom_time BIGINT NOT NULL,
+    CONSTRAINT uk_barber_offering UNIQUE (barber_id, offer_id)
     );
 
 CREATE TABLE IF NOT EXISTS visits (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     client_id BIGINT NOT NULL REFERENCES clients(id),
     barber_id BIGINT NOT NULL REFERENCES barbers(id),
-    service_id BIGINT NOT NULL REFERENCES services(id),
+    offer_id BIGINT NOT NULL REFERENCES offers(id),
     visit_time TIMESTAMPTZ NOT NULL,
     actual_price DECIMAL(10, 2) NOT NULL,
     actual_percent_barber INT NOT NULL,

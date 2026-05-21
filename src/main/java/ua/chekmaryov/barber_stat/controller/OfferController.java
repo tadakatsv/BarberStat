@@ -32,7 +32,7 @@ public class OfferController {
 
     @GetMapping
     public Page<OfferDtoResponse> getAllOffers(
-            @ParameterObject @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable){
+            @ParameterObject @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable){
         return offerService.getAll(pageable);
     }
 
@@ -44,10 +44,10 @@ public class OfferController {
         return offerService.updateById(id,request);
     }
 
-    @GetMapping
+    @GetMapping("/search")
     public Page<OfferDtoResponse> findByName(
-            @ParameterObject @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
-            @PathVariable("name") String name
+            @ParameterObject @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam("name") String name
     ){
         return offerService.findByName(name, pageable);
     }

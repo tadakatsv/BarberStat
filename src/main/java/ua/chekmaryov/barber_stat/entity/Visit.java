@@ -30,7 +30,7 @@ public class Visit {
     private Barber barber;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_id", nullable = false)
+    @JoinColumn(name = "offer_id", nullable = false)
     private Offer offer;
 
     @Column(name = "visit_time")
