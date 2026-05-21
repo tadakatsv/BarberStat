@@ -243,7 +243,63 @@ public class BarberControllerTest {
     }
 
     @Test
-    public void shouldSoftDeleteById() throws Exception{
+    public void updateById_shouldReturn404_WhenNoBarberById() throws Exception{
+        Long id = 1L;
+        BarberDtoUpdateRequest request = BarberDtoUpdateRequest.builder()
+                .firstName("Артур")
+                .lastName("Морган")
+                .phone("380666666666")
+                .birthDate(LocalDate.of(1868, Month.JUNE,22))
+                .status(null)
+                .role(BarberRole.TOP)
+                .salaryPercent(50)
+                .notes(null)
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
+
+
+        when(barberService.updateById(id,request)).thenThrow(new ResourceNotFoundException("Barber not found with id: " + id));
+
+
+        mockMvc.perform(put("/api/v1/barbers/1")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(barberService).updateById(anyLong(),eq(request));
+    }
+
+    @Test
+    public void updateById_shouldReturn409_WhenNoBarberById() throws Exception{
+        Long id = 1L;
+        BarberDtoUpdateRequest request = BarberDtoUpdateRequest.builder()
+                .firstName("Артур")
+                .lastName("Морган")
+                .phone("380666666666")
+                .birthDate(LocalDate.of(1868, Month.JUNE,22))
+                .status(null)
+                .role(BarberRole.TOP)
+                .salaryPercent(50)
+                .notes(null)
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
+
+
+        when(barberService.updateById(id,request)).thenThrow(new AlreadyExistsException("Barber from request with " + request.phone() +" already exists"));
+
+
+        mockMvc.perform(put("/api/v1/barbers/1")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+
+        verify(barberService).updateById(anyLong(),eq(request));
+    }
+
+    @Test
+    public void deleteById_shouldReturn200_WhenDeleteBarberExists() throws Exception{
         Long id = 1L;
         BarberDtoResponse response =
                 BarberDtoResponse.builder()
