@@ -7,11 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoCreateRequest;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoResponse;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoUpdateRequest;
-import ua.chekmaryov.barber_stat.service.ClientService;
+import ua.chekmaryov.barber_stat.enums.ClientStatus;
+import ua.chekmaryov.barber_stat.service.clients.ClientService;
 
 import java.time.LocalDate;
 
@@ -33,27 +35,33 @@ public class ClientController {
     }
 
     @GetMapping
-    public Page<ClientDtoResponse> getAllClients(@ParameterObject @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable){
+    public Page<ClientDtoResponse> getAllClients(
+            @ParameterObject @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable){
         return clientService.getAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public ClientDtoResponse getClientById(@PathVariable Long id){
+    public ClientDtoResponse getClientById(
+            @PathVariable Long id){
         return clientService.getById(id);
     }
 
     @PutMapping("/{id}")
-    public ClientDtoResponse updateClientById(@PathVariable("id") Long id, @Valid @RequestBody ClientDtoUpdateRequest request){
+    public ClientDtoResponse updateClientById(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody ClientDtoUpdateRequest request){
         return clientService.updateById(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public ClientDtoResponse deleteClientById(@PathVariable("id") Long id){
+    public ClientDtoResponse deleteClientById(
+            @PathVariable("id") Long id){
         return clientService.deleteById(id);
     }
 
     @GetMapping("/by-phone")
-    public ClientDtoResponse getByPhone(@RequestParam String phone){
+    public ClientDtoResponse getByPhone(
+            @RequestParam("phone") String phone){
         return clientService.getByPhone(phone);
     }
 
@@ -67,14 +75,15 @@ public class ClientController {
         return clientService.findByFirstNameAndLastName(firstName, lastName, pageable);
     }
 
-    @GetMapping("/search/by-visit-date")
-    public Page<ClientDtoResponse> findByLastVisitDateBetween(
+    @GetMapping("/search/by-visit-date-and-status")
+    public Page<ClientDtoResponse> findByStatusAndLastVisitDateBetween(
             @ParameterObject
             @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam("clientStatus") ClientStatus status,
             @RequestParam("lastVisitDateAfter") LocalDate lastVisitDateAfter,
             @RequestParam("lastVisitDateBefore") LocalDate lastVisitDateBefore
     ){
-        return clientService.findByLastVisitDateBetween(lastVisitDateAfter, lastVisitDateBefore, pageable);
+        return clientService.findByStatusAndLastVisitDateBetween(status,lastVisitDateAfter, lastVisitDateBefore, pageable);
     }
 }
 
