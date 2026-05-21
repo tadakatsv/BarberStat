@@ -9,7 +9,6 @@ import java.time.LocalDate;
 public record ClientDtoResponse(
         Long id,
         String fullName,
-        String lastName,
         String phone,
         LocalDate birthDate,
         ClientStatus status,
