@@ -36,6 +36,13 @@ public class OfferController {
         return offerService.getAll(pageable);
     }
 
+    @GetMapping("/{id}")
+    public OfferDtoResponse getOfferById(
+            @PathVariable("id") Long id
+    ){
+        return offerService.getById(id);
+    }
+
     @PutMapping("/{id}")
     public OfferDtoResponse updateOfferById(
             @PathVariable("id") Long id,
