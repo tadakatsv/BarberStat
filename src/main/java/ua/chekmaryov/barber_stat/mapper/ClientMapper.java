@@ -23,19 +23,19 @@ public class ClientMapper {
         toUpdate.setPhone(request.phone().replaceAll("\\s+",""));
         if (request.birthDate() != null) toUpdate.setBirthDate(request.birthDate());
         if (request.status() != null) toUpdate.setStatus(request.status());
-        if (request.lastVisitDate() != null)toUpdate.setLastVisitDate(request.lastVisitDate());
-        toUpdate.setNotes(request.notes());
+        if (request.lastVisitDate() != null) toUpdate.setLastVisitDate(request.lastVisitDate());
+        if (request.notes() != null) toUpdate.setNotes(request.notes());
         return toUpdate;
     }
 
     private Client updateEntityFromDto(ClientDtoUpdateRequest request, Client toUpdate){
-        if(request.firstName() != null) toUpdate.setFirstName(request.firstName().trim());
-        if(request.lastName() != null) toUpdate.setLastName(request.lastName().trim());
-        if(request.phone() != null) toUpdate.setPhone(request.phone().replaceAll("\\s+",""));
-        if (request.birthDate() != null) toUpdate.setBirthDate(request.birthDate());
+        if(request.firstName() != null && !request.firstName().isBlank()) toUpdate.setFirstName(request.firstName().trim());
+        if(request.lastName() != null && !request.lastName().isBlank()) toUpdate.setLastName(request.lastName().trim());
+        if(request.phone() != null && !request.phone().isBlank()) toUpdate.setPhone(request.phone().replaceAll("\\s+",""));
+        if (request.birthDate() != null ) toUpdate.setBirthDate(request.birthDate());
         if (request.status() != null) toUpdate.setStatus(request.status());
         if(request.lastVisitDate() != null) toUpdate.setLastVisitDate(request.lastVisitDate());
-        if(request.notes() != null) toUpdate.setNotes(request.notes());
+        if(request.notes() != null && !request.notes().isBlank()) toUpdate.setNotes(request.notes());
         return toUpdate;
     }
 
