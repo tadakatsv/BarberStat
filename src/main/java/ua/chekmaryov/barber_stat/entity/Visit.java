@@ -25,12 +25,10 @@ public class Visit {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    // Связь с мастером
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "barber_id", nullable = false)
     private Barber barber;
 
-    // Связь с типом услуги
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id", nullable = false)
     private Offer offer;

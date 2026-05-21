@@ -2,7 +2,6 @@ package ua.chekmaryov.barber_stat.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ua.chekmaryov.barber_stat.entity.Client;
 import ua.chekmaryov.barber_stat.entity.Visit;
 
 import java.time.Instant;

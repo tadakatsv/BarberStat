@@ -1,7 +1,6 @@
 package ua.chekmaryov.barber_stat.entity;
 
 import jakarta.persistence.*;
-import ua.chekmaryov.barber_stat.enums.BarberStatus;
 import ua.chekmaryov.barber_stat.enums.SalaryStatus;
 
 import java.math.BigDecimal;

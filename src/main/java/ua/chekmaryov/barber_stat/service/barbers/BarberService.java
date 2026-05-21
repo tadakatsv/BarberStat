@@ -1,4 +1,4 @@
-package ua.chekmaryov.barber_stat.service;
+package ua.chekmaryov.barber_stat.service.barbers;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

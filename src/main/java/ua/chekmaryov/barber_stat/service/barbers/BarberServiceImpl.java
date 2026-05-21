@@ -1,8 +1,7 @@
-package ua.chekmaryov.barber_stat.service;
+package ua.chekmaryov.barber_stat.service.barbers;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoCreateRequest;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
@@ -22,7 +21,7 @@ import java.util.Objects;
 
 @Slf4j
 @Service
-public class BarberServiceImpl implements BarberService{
+public class BarberServiceImpl implements BarberService {
 
     private final BarberRepository barberRepository;
     private final BarberMapper barberMapper;
@@ -76,7 +75,7 @@ public class BarberServiceImpl implements BarberService{
         log.debug("Retrieved barber:{} {}", barber.getFirstName(), barber.getLastName());
         if (!Objects.equals(barber.getPhone(), request.phone().replaceAll("\\s+",""))){
             if(barberRepository.existsByPhone(request.phone().replaceAll("\\s+",""))){
-                throw new AlreadyExistsException("Barber with " + request.phone() +" already exists");
+                throw new AlreadyExistsException("Barber from request with " + request.phone() +" already exists");
             }
         }
         Barber updated = barberRepository.save(barberMapper.dtoUpdateToEntity(request,barber));

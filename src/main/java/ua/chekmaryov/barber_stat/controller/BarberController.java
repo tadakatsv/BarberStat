@@ -14,7 +14,7 @@ import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoCreateRequest;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoUpdateRequest;
 import ua.chekmaryov.barber_stat.enums.BarberStatus;
-import ua.chekmaryov.barber_stat.service.BarberService;
+import ua.chekmaryov.barber_stat.service.barbers.BarberService;
 
 @RestController
 @Slf4j
