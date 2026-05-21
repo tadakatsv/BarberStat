@@ -19,16 +19,17 @@ public class BarberOffering {
     @Column(name = "id")
     private Long id;
 
-    // Связь с мастером
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "barber_id", nullable = false)
     private Barber barber;
 
-    // Связь с типом услуги
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id", nullable = false)
     private Offer offer;
 
     @Column(name = "price",nullable = false)
     private BigDecimal price;
+
+    @Column(name = "custom_time",nullable = false)
+    private Long customTime;
 }
