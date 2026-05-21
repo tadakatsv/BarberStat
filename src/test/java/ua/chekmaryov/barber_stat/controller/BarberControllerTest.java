@@ -90,18 +90,34 @@ public class BarberControllerTest {
                 .build();
 
         String json = objectMapper.writeValueAsString(invalidRequest);
-        // Act & Assert
         mockMvc.perform(post("/api/v1/barbers")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest()); // Чекаємо 400 помилку
 
-        // Перевіряємо, що сервіс навіть не викликався, бо валідація спрацювала раніше
         verify(barberService, times(0)).create(any());
     }
 
     @Test
-    public void shouldGetException_WhenBarberByPhoneAlreadyExists() throws Exception{
+    public void create_shouldReturn400_WhenSalaryPercentIsHigherThan100() throws Exception {
+        BarberDtoCreateRequest invalidRequest = BarberDtoCreateRequest.builder()
+                .firstName("Arthur")
+                .lastName("Morgan")
+                .phone("380666666666")
+                .salaryPercent(120)
+                .build();
+
+        String json = objectMapper.writeValueAsString(invalidRequest);
+        mockMvc.perform(post("/api/v1/barbers")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(barberService, times(0)).create(any());
+    }
+
+    @Test
+    public void create_shouldReturn409_WhenBarberPhoneAlreadyExists() throws Exception{
         BarberDtoCreateRequest request = BarberDtoCreateRequest.builder()
                 .firstName("Артур")
                 .lastName("Морган")
