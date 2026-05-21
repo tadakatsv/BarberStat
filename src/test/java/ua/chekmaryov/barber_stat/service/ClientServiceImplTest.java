@@ -227,10 +227,43 @@ public class ClientServiceImplTest {
 
         ClientDtoResponse actualResponse = clientService.updateById(id,request);
 
+        assertNotNull(actualResponse);
+        assertEquals(response,actualResponse);
+
         verify(clientRepository).findById(anyLong());
         verify(clientMapper).dtoUpdateToEntity(any(ClientDtoUpdateRequest.class),any(Client.class));
         verify(clientRepository).save(any(Client.class));
         verify(clientMapper).toResponse(any(Client.class));
+    }
+
+    @Test
+    public void updateById_ShouldThrowAlreadyExistsException_WhenPhoneFromClientRequestAlreadyExist(){
+        Long id = 1L;
+        ClientDtoUpdateRequest request = ClientDtoUpdateRequest.builder()
+                .firstName("John")
+                .lastName("Marston")
+                .phone("380666666666")
+                .birthDate(LocalDate.of(1873, Month.JUNE,22))
+                .status(ClientStatus.BLACKLISTED)
+                .lastVisitDate(null)
+                .notes(null)
+                .build();
+        Client client = new Client(null,"John","Marston", "380999999999", LocalDate.of(1873, Month.JUNE,22), ClientStatus.ACTIVE, null,null);
+        when(clientRepository.findById(id)).thenReturn(Optional.of(client));
+        when(clientRepository.existsByPhone(request.phone())).thenReturn(true);
+
+        Exception exception = assertThrows(AlreadyExistsException.class, () ->clientService.updateById(id,request));
+
+        String expectedMessage = "Client from request with " + request.phone() +" already exists";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+
+        verify(clientRepository).findById(anyLong());
+        verify(clientRepository).existsByPhone(anyString());
+        verify(clientMapper,never()).dtoUpdateToEntity(any(ClientDtoUpdateRequest.class),any(Client.class));
+        verify(clientRepository,never()).save(any(Client.class));
+        verify(clientMapper,never()).toResponse(any(Client.class));
     }
 
     @Test
