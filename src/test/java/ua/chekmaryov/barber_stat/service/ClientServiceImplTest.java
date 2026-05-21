@@ -12,13 +12,14 @@ import org.springframework.data.domain.Pageable;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoCreateRequest;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoResponse;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoUpdateRequest;
-import ua.chekmaryov.barber_stat.entity.Barber;
 import ua.chekmaryov.barber_stat.entity.Client;
 import ua.chekmaryov.barber_stat.enums.ClientStatus;
+import ua.chekmaryov.barber_stat.exception.BadRequestException;
 import ua.chekmaryov.barber_stat.mapper.ClientMapper;
 import ua.chekmaryov.barber_stat.repository.ClientRepository;
 import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
+import ua.chekmaryov.barber_stat.service.clients.ClientServiceImpl;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -419,4 +420,82 @@ public class ClientServiceImplTest {
         verify(clientRepository).findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(anyString(), anyString(), eq(pageable));
         verify(clientMapper,never()).toResponse(any(Client.class));
     }
+
+    @Test
+    public void findByStatusAndLastVisitDateBetween_ShouldReturnPage_WhenClientsExist(){
+        Pageable pageable = PageRequest.of(0, 10);
+        Client client = new Client(1L, "John", "Marston", "380666666666", LocalDate.of(1873, Month.JUNE, 22), ClientStatus.INACTIVE, LocalDate.of(2025,7,2), null);
+        ClientDtoResponse response = ClientDtoResponse.builder()
+                .id(1L)
+                .fullName("John Marston")
+                .phone("380666666666")
+                .birthDate(LocalDate.of(1873, Month.JUNE, 22))
+                .status(ClientStatus.INACTIVE)
+                .lastVisitDate(LocalDate.of(2025,7,2))
+                .notes(null)
+                .build();
+        Page<Client> clientPage = new PageImpl<>(List.of(client), pageable, 1);
+
+        when(clientRepository.findClientsByStatusAndLastVisitDateBetween(ClientStatus.ACTIVE,LocalDate.of(2025,7,1),LocalDate.of(2025,7,5),pageable)).thenReturn(clientPage);
+        when(clientMapper.toResponse(client)).thenReturn(response);
+
+        Page<ClientDtoResponse> actualResponse = clientService.findByStatusAndLastVisitDateBetween(ClientStatus.ACTIVE,LocalDate.of(2025,7,1),LocalDate.of(2025,7,5),pageable);
+
+        assertNotNull(actualResponse);
+        assertEquals(1, actualResponse.getTotalElements());
+        assertEquals(response, actualResponse.getContent().getLast());
+
+        verify(clientRepository).findClientsByStatusAndLastVisitDateBetween(any(ClientStatus.class),any(LocalDate.class),any(LocalDate.class), any(Pageable.class));
+        verify(clientMapper).toResponse(any(Client.class));
     }
+
+    @Test
+    public void findByStatusAndLastVisitDateBetween_ShouldReturnPage_WhenNoClientsExist(){
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(clientRepository.findClientsByStatusAndLastVisitDateBetween(ClientStatus.ACTIVE,LocalDate.of(2025,7,1),LocalDate.of(2025,7,5),pageable)).thenReturn(Page.empty());
+
+        Page<ClientDtoResponse> actualResponse = clientService.findByStatusAndLastVisitDateBetween(ClientStatus.ACTIVE,LocalDate.of(2025,7,1),LocalDate.of(2025,7,5),pageable);
+
+        assertNotNull(actualResponse);
+        assertEquals(0, actualResponse.getTotalElements());
+        assertTrue(actualResponse.getContent().isEmpty());
+
+        verify(clientRepository).findClientsByStatusAndLastVisitDateBetween(any(ClientStatus.class),any(LocalDate.class),any(LocalDate.class), any(Pageable.class));
+        verify(clientMapper,never()).toResponse(any(Client.class));
+    }
+
+    @Test
+    public void findByStatusAndLastVisitDateBetween_ShouldThrowBadRequestException_WhenStartDateAfterEndDate(){
+        Pageable pageable = PageRequest.of(0, 10);
+        LocalDate lastVisitDateAfter = LocalDate.of(2025, 7, 7);
+        LocalDate lastVisitDateBefore = LocalDate.of(2025, 7, 5);
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            clientService.findByStatusAndLastVisitDateBetween(ClientStatus.ACTIVE, lastVisitDateAfter, lastVisitDateBefore,pageable));
+
+        String expectedMessage = "Start date (" + lastVisitDateAfter + ") cannot be after end date (" + lastVisitDateBefore + ")";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+
+        verify(clientRepository,never()).findClientsByStatusAndLastVisitDateBetween(any(ClientStatus.class),any(LocalDate.class),any(LocalDate.class), any(Pageable.class));
+        verify(clientMapper,never()).toResponse(any(Client.class));
+    }
+
+    @Test
+    public void findByStatusAndLastVisitDateBetween_ShouldThrowBadRequestException_WhenDateFromFuture(){
+        Pageable pageable = PageRequest.of(0, 10);
+        LocalDate lastVisitDateAfter = LocalDate.of(2026, 7, 7);
+        LocalDate lastVisitDateBefore = LocalDate.of(2026, 7, 9);
+        Exception exception = assertThrows(BadRequestException.class, () ->
+                clientService.findByStatusAndLastVisitDateBetween(ClientStatus.ACTIVE, lastVisitDateAfter, lastVisitDateBefore,pageable));
+
+        String expectedMessage = "Search dates cannot be in the future. Today is " + LocalDate.now();
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+
+        verify(clientRepository,never()).findClientsByStatusAndLastVisitDateBetween(any(ClientStatus.class),any(LocalDate.class),any(LocalDate.class), any(Pageable.class));
+        verify(clientMapper,never()).toResponse(any(Client.class));
+    }
+}
