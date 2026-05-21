@@ -19,6 +19,7 @@ import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
 import ua.chekmaryov.barber_stat.mapper.BarberMapper;
 import ua.chekmaryov.barber_stat.repository.BarberRepository;
+import ua.chekmaryov.barber_stat.service.barbers.BarberServiceImpl;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -48,7 +49,6 @@ public class BarberServiceImplTest {
 
         Barber barber = new Barber(1L,"Артур","Морган","380666666666",LocalDate.of(1868, Month.JUNE,22),BarberStatus.ACTIVE,BarberRole.TOP,50,null);
 
-        // Створюємо "фейкову" сторінку з одним барбером
         Page<Barber> barberPage = new PageImpl<>(List.of(barber), pageable, 1);
 
         BarberDtoResponse response =
@@ -62,7 +62,7 @@ public class BarberServiceImplTest {
                         .salaryPercent(50)
                         .notes(null)
                         .build();
-        // Налаштовуємо поведінку моків
+
         when(barberRepository.findAll(pageable)).thenReturn(barberPage);
         when(barberMapper.toResponse(barber)).thenReturn(response);
 
@@ -74,7 +74,6 @@ public class BarberServiceImplTest {
         assertEquals(1, result.getTotalElements());
         assertEquals(response, result.getContent().getLast());
 
-        // Перевіряємо, що сервіс реально ходив у базу та мапер
         verify(barberRepository, times(1)).findAll(pageable);
         verify(barberMapper, times(1)).toResponse(any(Barber.class));
     }
@@ -84,7 +83,6 @@ public class BarberServiceImplTest {
         // 1. ARRANGE
         Pageable pageable = PageRequest.of(0, 10); // Перша сторінка, 10 записів
 
-        // Налаштовуємо поведінку моків
         when(barberRepository.findAll(pageable)).thenReturn(Page.empty());
 
         // 2. ACT
@@ -95,7 +93,6 @@ public class BarberServiceImplTest {
         assertEquals(0, result.getTotalElements());
         assertTrue(result.getContent().isEmpty());
 
-        // Перевіряємо, що сервіс реально ходив у базу та мапер
         verify(barberRepository, times(1)).findAll(pageable);
         verify(barberMapper, times(0)).toResponse(any(Barber.class));
     }
@@ -147,6 +144,7 @@ public class BarberServiceImplTest {
 
     @Test
     public void create_ShouldThrowAlreadyExistsException_WhenPhoneAlreadyRegistered(){
+        // 1. ARRANGE
         BarberDtoCreateRequest request = BarberDtoCreateRequest.builder()
                 .firstName("Артур")
                 .lastName("Морган")
@@ -176,6 +174,7 @@ public class BarberServiceImplTest {
 
     @Test
     public void getById_ShouldReturnDtoResponse_WhenBarberById(){
+        // 1. ARRANGE
         Long id = 1L;
         Barber barber= new Barber(id,"Артур","Морган","380666666666",LocalDate.of(1868, Month.JUNE,22),BarberStatus.ACTIVE,BarberRole.TOP,50,null);
         BarberDtoResponse response =
@@ -191,9 +190,10 @@ public class BarberServiceImplTest {
                         .build();
         when(barberRepository.findById(id)).thenReturn(Optional.of(barber));
         when(barberMapper.toResponse(barber)).thenReturn(response);
-
+        // 2. ACT
         BarberDtoResponse actualResponse = barberService.getById(id);
 
+        // 3. ASSERT
         assertNotNull(actualResponse);
         assertEquals(response,actualResponse);
 
@@ -204,14 +204,17 @@ public class BarberServiceImplTest {
 
     @Test
     public void getById_ShouldReturnDtoResponse_WhenNoBarberById(){
+        // 1. ARRANGE
         Long id = 1L;
 
         when(barberRepository.findById(id)).thenReturn(Optional.empty());
 
+        // 2. ACT
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> barberService.getById(id));
         String expectedMessage = "Barber not found with id: " + id;
         String actualMessage = exception.getMessage();
 
+        // 3. ASSERT
         assertTrue(actualMessage.contains(expectedMessage));
 
         verify(barberRepository, times(1)).findById(anyLong());
@@ -220,6 +223,7 @@ public class BarberServiceImplTest {
 
     @Test
     public void updateById_ShouldReturnDtoResponse_WhenBarberById(){
+        // 1. ARRANGE
         Long id = 1L;
         Barber barberBefore = new Barber(1L,"Артур","Морган","380666666666",LocalDate.of(1868, Month.JUNE,22),BarberStatus.ACTIVE,BarberRole.MIDDLE,50,null);
         BarberDtoUpdateRequest request = BarberDtoUpdateRequest.builder()
@@ -252,8 +256,10 @@ public class BarberServiceImplTest {
         when(barberRepository.save(barberAfter)).thenReturn(barberFromRepostiry);
         when(barberMapper.toResponse(barberFromRepostiry)).thenReturn(response);
 
+        // 2. ACT
         BarberDtoResponse actualResponse = barberService.updateById(id,request);
 
+        // 3. ASSERT
         assertNotNull(actualResponse);
         assertEquals(response,actualResponse);
 
@@ -264,7 +270,41 @@ public class BarberServiceImplTest {
     }
 
     @Test
+    public void updateById_ShouldThrowAlreadyExistsException_WhenPhoneFromBarbeRequestAlreadyExist(){
+        // 1. ARRANGE
+        Long id = 1L;
+        BarberDtoUpdateRequest request = BarberDtoUpdateRequest.builder()
+                .firstName("Артур")
+                .lastName("Морган")
+                .phone("380666666666")
+                .birthDate(LocalDate.of(1868, Month.JUNE,22))
+                .status(BarberStatus.VACATION)
+                .role(BarberRole.TOP)
+                .salaryPercent(50)
+                .notes(null)
+                .build();
+        Barber barberBefore = new Barber(1L,"Артур","Морган","380666946699",LocalDate.of(1868, Month.JUNE,22),BarberStatus.ACTIVE,BarberRole.MIDDLE,50,null);
+
+        when(barberRepository.findById(id)).thenReturn(Optional.of(barberBefore));
+        when(barberRepository.existsByPhone(request.phone())).thenReturn(true);
+        // 2. ACT
+        Exception exception = assertThrows(AlreadyExistsException.class, () -> barberService.updateById(id,request));
+        String expectedMessage = "Barber from request with " + request.phone() +" already exists";
+        String actualMessage = exception.getMessage();
+
+        // 3. ASSERT
+        assertTrue(actualMessage.contains(expectedMessage));
+
+        verify(barberRepository, times(1)).findById(anyLong());
+        verify(barberRepository).existsByPhone(anyString());
+        verify(barberMapper, times(0)).toResponse(any(Barber.class));
+        verify(barberRepository, times(0)).save(any(Barber.class));
+        verify(barberMapper, times(0)).toResponse(any(Barber.class));
+    }
+
+    @Test
     public void updateById_ShouldReturnDtoResponse_WhenNoBarberById(){
+        // 1. ARRANGE
         Long id = 1L;
         BarberDtoUpdateRequest request = BarberDtoUpdateRequest.builder()
                 .firstName("Артур")
@@ -278,11 +318,11 @@ public class BarberServiceImplTest {
                 .build();
 
         when(barberRepository.findById(id)).thenReturn(Optional.empty());
-
+        // 2. ACT
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> barberService.updateById(id,request));
         String expectedMessage = "Barber not found with id: " + id;
         String actualMessage = exception.getMessage();
-
+        // 3. ASSERT
         assertTrue(actualMessage.contains(expectedMessage));
 
         verify(barberRepository, times(1)).findById(anyLong());
@@ -293,6 +333,7 @@ public class BarberServiceImplTest {
 
     @Test
     public void deleteById_ShouldReturnDtoResponse_WhenBarberById(){
+        // 1. ARRANGE
         Long id = 1L;
         Barber barber= new Barber(id,"Артур","Морган","380666666666",LocalDate.of(1868, Month.JUNE,22),BarberStatus.VACATION,BarberRole.TOP,50,null);
         BarberDtoResponse response =
@@ -309,9 +350,9 @@ public class BarberServiceImplTest {
 
         when(barberRepository.findById(id)).thenReturn(Optional.of(barber));
         when(barberMapper.toResponse(barber)).thenReturn(response);
-
+        // 2. ACT
         BarberDtoResponse actualResponse = barberService.deleteById(id);
-
+        // 3. ASSERT
         assertNotNull(actualResponse);
         assertEquals(response,actualResponse);
         assertEquals(BarberStatus.FIRED, actualResponse.status());
@@ -322,14 +363,15 @@ public class BarberServiceImplTest {
 
     @Test
     public void deleteById_ShouldReturnDtoResponse_WhenNoBarberById(){
+        // 1. ARRANGE
         Long id = 1L;
 
         when(barberRepository.findById(id)).thenReturn(Optional.empty());
-
+        // 2. ACT
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> barberService.deleteById(id));
         String expectedMessage = "Barber not found with id: " + id;
         String actualMessage = exception.getMessage();
-
+        // 3. ASSERT
         assertTrue(actualMessage.contains(expectedMessage));
 
         verify(barberRepository, times(1)).findById(anyLong());
@@ -356,7 +398,7 @@ public class BarberServiceImplTest {
                         .salaryPercent(50)
                         .notes(null)
                         .build();
-        // Налаштовуємо поведінку моків
+
         when(barberRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase("Артур","Морган",pageable)).thenReturn(barberPage);
         when(barberMapper.toResponse(barber)).thenReturn(response);
 
@@ -368,7 +410,6 @@ public class BarberServiceImplTest {
         assertEquals(1, result.getTotalElements());
         assertEquals(response, result.getContent().getLast());
 
-        // Перевіряємо, що сервіс реально ходив у базу та мапер
         verify(barberRepository, times(1)).findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(anyString(),anyString(),eq(pageable));
         verify(barberMapper, times(1)).toResponse(any(Barber.class));
     }
@@ -378,7 +419,6 @@ public class BarberServiceImplTest {
         // 1. ARRANGE
         Pageable pageable = PageRequest.of(0, 10); // Перша сторінка, 10 записів
 
-        // Налаштовуємо поведінку моків
         when(barberRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase("Артур","Морган",pageable)).thenReturn(Page.empty());
 
         // 2. ACT
@@ -389,7 +429,6 @@ public class BarberServiceImplTest {
         assertEquals(0, result.getTotalElements());
         assertTrue(result.getContent().isEmpty());
 
-        // Перевіряємо, що сервіс реально ходив у базу та мапер
         verify(barberRepository, times(1)).findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(anyString(),anyString(),eq(pageable));
         verify(barberMapper, times(0)).toResponse(any(Barber.class));
     }
@@ -414,7 +453,7 @@ public class BarberServiceImplTest {
                         .salaryPercent(50)
                         .notes(null)
                         .build();
-        // Налаштовуємо поведінку моків
+
         when(barberRepository.findBarbersByStatusIs(BarberStatus.ACTIVE,pageable)).thenReturn(barberPage);
         when(barberMapper.toResponse(barber)).thenReturn(response);
 
@@ -426,7 +465,6 @@ public class BarberServiceImplTest {
         assertEquals(1, result.getTotalElements());
         assertEquals(response, result.getContent().getLast());
 
-        // Перевіряємо, що сервіс реально ходив у базу та мапер
         verify(barberRepository, times(1)).findBarbersByStatusIs(any(BarberStatus.class),eq(pageable));
         verify(barberMapper, times(1)).toResponse(any(Barber.class));
     }
@@ -436,7 +474,6 @@ public class BarberServiceImplTest {
         // 1. ARRANGE
         Pageable pageable = PageRequest.of(0, 10); // Перша сторінка, 10 записів
 
-        // Налаштовуємо поведінку моків
         when(barberRepository.findBarbersByStatusIs(BarberStatus.ACTIVE,pageable)).thenReturn(Page.empty());
 
         // 2. ACT
@@ -447,7 +484,6 @@ public class BarberServiceImplTest {
         assertEquals(0, result.getTotalElements());
         assertTrue(result.getContent().isEmpty());
 
-        // Перевіряємо, що сервіс реально ходив у базу та мапер
         verify(barberRepository, times(1)).findBarbersByStatusIs(any(BarberStatus.class),eq(pageable));
         verify(barberMapper, times(0)).toResponse(any(Barber.class));
     }
