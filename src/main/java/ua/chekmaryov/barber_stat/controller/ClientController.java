@@ -29,6 +29,7 @@ public class ClientController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ClientDtoResponse createClient(
             @Valid @RequestBody ClientDtoCreateRequest request){
         return clientService.create(request);
