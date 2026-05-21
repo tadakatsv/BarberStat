@@ -1,4 +1,4 @@
-package ua.chekmaryov.barber_stat.service;
+package ua.chekmaryov.barber_stat.service.clients;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import java.util.Objects;
 
 @Slf4j
 @Service
-public class ClientServiceImpl implements ClientService{
+public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
 
@@ -69,7 +69,7 @@ public class ClientServiceImpl implements ClientService{
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found with id: " + id));
         if (!Objects.equals(client.getPhone(), request.phone().replaceAll("\\s+",""))){
             if(clientRepository.existsByPhone(request.phone().replaceAll("\\s+",""))){
-                throw new AlreadyExistsException("Client with " + request.phone() +" already exists");
+                throw new AlreadyExistsException("Client from request with " + request.phone() +" already exists");
             }
         }
         Client updated = clientRepository.save(clientMapper.dtoUpdateToEntity(request,client));
@@ -110,12 +110,15 @@ public class ClientServiceImpl implements ClientService{
 
     @Override
     @Transactional
-    public Page<ClientDtoResponse> findByLastVisitDateBetween(LocalDate lastVisitDateAfter, LocalDate lastVisitDateBefore, Pageable pageable) {
+    public Page<ClientDtoResponse> findByStatusAndLastVisitDateBetween(ClientStatus status, LocalDate lastVisitDateAfter, LocalDate lastVisitDateBefore, Pageable pageable) {
         log.info("Attempting to find client between {} and {}", lastVisitDateAfter,lastVisitDateBefore);
         if (lastVisitDateAfter.isAfter(lastVisitDateBefore)){
             throw new BadRequestException("Start date (" + lastVisitDateAfter + ") cannot be after end date (" + lastVisitDateBefore + ")");
         }
-        Page<ClientDtoResponse> clients = clientRepository.findClientsByLastVisitDateBetween(lastVisitDateAfter,lastVisitDateBefore,pageable)
+        if ((LocalDate.now().isBefore(lastVisitDateAfter) || ((LocalDate.now().isBefore(lastVisitDateBefore))))){
+            throw new BadRequestException("Search dates cannot be in the future. Today is " + LocalDate.now());
+        }
+        Page<ClientDtoResponse> clients = clientRepository.findClientsByStatusAndLastVisitDateBetween(status,lastVisitDateAfter,lastVisitDateBefore,pageable)
                 .map(clientMapper::toResponse);
         log.debug("Search complete. Found {} clients matching the criteria", clients.getTotalElements());
         return clients;
