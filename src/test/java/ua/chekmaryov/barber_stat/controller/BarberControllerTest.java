@@ -19,13 +19,12 @@ import ua.chekmaryov.barber_stat.enums.BarberRole;
 import ua.chekmaryov.barber_stat.enums.BarberStatus;
 import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
-import ua.chekmaryov.barber_stat.service.BarberServiceImpl;
+import ua.chekmaryov.barber_stat.service.barbers.BarberServiceImpl;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -42,7 +41,7 @@ public class BarberControllerTest {
     private BarberServiceImpl barberService;
 
     @Test
-    public void shouldCreateBarber() throws Exception{
+    public void create_shouldReturn201_WhenCreateValidBarber() throws Exception{
         BarberDtoCreateRequest request = BarberDtoCreateRequest.builder()
                 .firstName("Артур")
                 .lastName("Морган")
@@ -83,8 +82,7 @@ public class BarberControllerTest {
     }
 
     @Test
-    public void shouldReturn400_WhenFirstNameIsBlank() throws Exception {
-        // Arrange: створюємо некоректний запит (ім'я порожнє)
+    public void create_shouldReturn400_WhenFirstNameIsBlank() throws Exception {
         BarberDtoCreateRequest invalidRequest = BarberDtoCreateRequest.builder()
                 .firstName("") // Порожнє ім'я
                 .lastName("Морган")
@@ -127,7 +125,7 @@ public class BarberControllerTest {
     }
 
     @Test
-    public void shouldReturnAllBarbers() throws Exception{
+    public void getAll_shouldReturn200_WhenBarbersExist() throws Exception{
         BarberDtoResponse response =
                 BarberDtoResponse.builder()
                         .id(1L)
@@ -151,8 +149,7 @@ public class BarberControllerTest {
     }
 
     @Test
-    public void shouldGetBarberById() throws Exception{
-        Long id = 1L;
+    public void getAll_shouldReturn200_WhenBarbersDontExist() throws Exception{
         BarberDtoResponse response =
                 BarberDtoResponse.builder()
                         .id(1L)
@@ -174,7 +171,7 @@ public class BarberControllerTest {
     }
 
     @Test
-    public void shouldGetException_WhenNoBarberById() throws Exception{
+    public void getById_shouldReturn404_WhenBarberNotFoundById() throws Exception{
         Long id = 1L;
 
         when(barberService.getById(id))
@@ -186,7 +183,7 @@ public class BarberControllerTest {
     }
 
     @Test
-    public void shouldUpdateById() throws Exception{
+    public void updateById_shouldReturn200_WhenUpdateValidBarber() throws Exception{
         Long id = 1L;
         BarberDtoUpdateRequest request = BarberDtoUpdateRequest.builder()
                 .firstName("Артур")
@@ -275,7 +272,7 @@ public class BarberControllerTest {
     }
 
     @Test
-    public void shouldReturnBarbersByStatus() throws Exception{
+    public void findByStatus_shouldReturn200_WhenSearchByStatus() throws Exception{
         BarberDtoResponse response =
                 BarberDtoResponse.builder()
                         .id(1L)
