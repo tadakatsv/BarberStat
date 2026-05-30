@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import ua.chekmaryov.barber_stat.enums.VisitStatus;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "visits")
@@ -34,14 +34,20 @@ public class Visit {
     private Offer offer;
 
     @Column(name = "visit_time")
-    private Instant visitTime;
+    private LocalDateTime visitTime;
 
     @Column(name = "actual_price")
     private BigDecimal actualPrice;
 
+    @Column(name = "actual_percent_barber")
+    private Integer actualBarberPercentage;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private VisitStatus status = VisitStatus.PLANNED;
+
+    @Column(name = "duration")
+    private Integer durationMinutes;
 
     @Column(name = "notes")
     private String notes;
