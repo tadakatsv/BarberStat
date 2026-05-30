@@ -1,10 +1,7 @@
 package ua.chekmaryov.barber_stat.dto.barbers;
 
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import ua.chekmaryov.barber_stat.enums.BarberRole;
 import ua.chekmaryov.barber_stat.enums.BarberStatus;
@@ -19,7 +16,7 @@ public record BarberDtoCreateRequest(
     @NotNull(message = "Birth date is required") LocalDate birthDate,
     BarberStatus status,
     BarberRole role,
-    @Min(value = 0, message = "Salary percent cannot be less than 0")
+    @Positive(message = "Salary percent cannot be less than 0")
     @Max(value = 100, message = "Salary percent cannot be more than 100")
     Integer salaryPercent,
     String notes
