@@ -1,4 +1,4 @@
-package ua.chekmaryov.barber_stat.controller;
+package ua.chekmaryov.barber_stat.controller.barbers;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
+import ua.chekmaryov.barber_stat.controller.BarberController;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoCreateRequest;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoUpdateRequest;
@@ -351,7 +352,7 @@ public class BarberControllerTest {
 
         when(barberService.findByFirstNameAndLastName(eq("Артур"),eq("Морган"), any(Pageable.class))).thenReturn(barberPage);
 
-        mockMvc.perform(get("/api/v1/barbers/search/by-first-name-and-second-name?firstName=Артур&lastName=Морган"))
+        mockMvc.perform(get("/api/v1/barbers/search/by-first-name-and-last-name?firstName=Артур&lastName=Морган"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].fullName").value("Артур Морган"));
 

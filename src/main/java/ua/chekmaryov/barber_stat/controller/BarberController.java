@@ -34,7 +34,7 @@ public class BarberController {
     }
 
     @GetMapping
-    public Page<BarberDtoResponse> getAllBarbers(@ParameterObject @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC)Pageable pageable){
+    public Page<BarberDtoResponse> getAllBarbers(@ParameterObject @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)Pageable pageable){
         return service.getAll(pageable);
     }
 
@@ -44,7 +44,7 @@ public class BarberController {
     }
 
     @PutMapping("/{id}")
-    public BarberDtoResponse updateBarberById(@PathVariable("id") Long id, @Valid @RequestBody BarberDtoUpdateRequest request){
+    public BarberDtoResponse updateBarberById(@PathVariable("id") Long id, @RequestBody @Valid BarberDtoUpdateRequest request){
         return service.updateById(id,request);
     }
 
@@ -53,12 +53,12 @@ public class BarberController {
         return service.deleteById(id);
     }
 
-    @GetMapping("/search/by-first-name-and-second-name")
+    @GetMapping("/search/by-first-name-and-last-name")
     public Page<BarberDtoResponse> findBarberByFirstNameAndLastName(
             @ParameterObject
-            @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam("firstName") @NotBlank(message = "First name is required")  String firstName,
-            @RequestParam("lastName") @NotBlank(message = "Second name is required") String lastName
+            @RequestParam("lastName") @NotBlank(message = "Last name is required") String lastName
             ) {
         return service.findByFirstNameAndLastName(firstName, lastName,pageable);
     }
@@ -66,7 +66,7 @@ public class BarberController {
     @GetMapping("/search/by-status")
     public Page<BarberDtoResponse> findBarbersByStatus(
             @ParameterObject
-            @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam("status") BarberStatus status
             ) {
         return service.findByStatus(status,pageable);
