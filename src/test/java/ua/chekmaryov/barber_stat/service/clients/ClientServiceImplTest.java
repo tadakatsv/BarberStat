@@ -1,4 +1,4 @@
-package ua.chekmaryov.barber_stat.service;
+package ua.chekmaryov.barber_stat.service.clients;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,6 @@ import ua.chekmaryov.barber_stat.mapper.ClientMapper;
 import ua.chekmaryov.barber_stat.repository.ClientRepository;
 import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
-import ua.chekmaryov.barber_stat.service.clients.ClientServiceImpl;
 
 import java.time.LocalDate;
 import java.time.Month;

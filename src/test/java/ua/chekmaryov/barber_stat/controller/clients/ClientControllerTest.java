@@ -1,4 +1,4 @@
-package ua.chekmaryov.barber_stat.controller;
+package ua.chekmaryov.barber_stat.controller.clients;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
