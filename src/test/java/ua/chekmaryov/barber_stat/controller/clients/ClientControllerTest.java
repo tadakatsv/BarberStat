@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
+import ua.chekmaryov.barber_stat.controller.ClientController;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoCreateRequest;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoResponse;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoUpdateRequest;
@@ -231,7 +232,7 @@ public class ClientControllerTest {
     }
 
     @Test
-    public void updateById_shouldReturn409_WhenNoClientById() throws Exception{
+    public void updateById_shouldReturn409_WhenPhoneFromRequestAlreadyExists() throws Exception{
         Long id = 1L;
         ClientDtoUpdateRequest request = ClientDtoUpdateRequest.builder()
                 .firstName("John")
@@ -305,7 +306,7 @@ public class ClientControllerTest {
 
         when(clientService.getByPhone("380666666666")).thenReturn(response);
 
-        mockMvc.perform(get("/api/v1/clients/by-phone?phone=380666666666"))
+        mockMvc.perform(get("/api/v1/clients/search/by-phone?phone=380666666666"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.phone").value("380666666666"));
 
@@ -318,7 +319,7 @@ public class ClientControllerTest {
 
         when(clientService.getByPhone(phone)).thenThrow(new ResourceNotFoundException("Client not found with phone: " + phone));
 
-        mockMvc.perform(get("/api/v1/clients/by-phone?phone=380666666666"))
+        mockMvc.perform(get("/api/v1/clients/search/by-phone?phone=380666666666"))
                 .andExpect(status().isNotFound());
 
         verify(clientService).getByPhone(anyString());
@@ -341,7 +342,7 @@ public class ClientControllerTest {
 
         when(clientService.findByFirstNameAndLastName(eq("John"),eq("Marston"),any(Pageable.class))).thenReturn(clientPage);
 
-        mockMvc.perform(get("/api/v1/clients/by-first-name-and-second-name?firstName=John&lastName=Marston"))
+        mockMvc.perform(get("/api/v1/clients/search/by-first-name-and-last-name?firstName=John&lastName=Marston"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].fullName").value("John Marston"));
 
@@ -353,7 +354,7 @@ public class ClientControllerTest {
 
         when(clientService.findByFirstNameAndLastName(eq("John"),eq("Marston"),any(Pageable.class))).thenReturn(Page.empty());
 
-        mockMvc.perform(get("/api/v1/clients/by-first-name-and-second-name?firstName=John&lastName=Marston"))
+        mockMvc.perform(get("/api/v1/clients/search/by-first-name-and-last-name?firstName=John&lastName=Marston"))
                 .andExpect(status().isOk());
 
         verify(clientService).findByFirstNameAndLastName(anyString(),anyString(),any(Pageable.class));

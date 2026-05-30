@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoCreateRequest;
@@ -37,7 +38,7 @@ public class ClientController {
 
     @GetMapping
     public Page<ClientDtoResponse> getAllClients(
-            @ParameterObject @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable){
+            @ParameterObject @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
         return clientService.getAll(pageable);
     }
 
@@ -60,16 +61,16 @@ public class ClientController {
         return clientService.deleteById(id);
     }
 
-    @GetMapping("/by-phone")
+    @GetMapping("/search/by-phone")
     public ClientDtoResponse getByPhone(
             @RequestParam("phone") String phone){
         return clientService.getByPhone(phone);
     }
 
-    @GetMapping("/by-first-name-and-second-name")
+    @GetMapping("/search/by-first-name-and-last-name")
     public Page<ClientDtoResponse> getClientsByFirstNameAndLastName(
             @ParameterObject
-            @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam("firstName") String firstName,
             @RequestParam("lastName") String lastName
     ){
@@ -79,10 +80,10 @@ public class ClientController {
     @GetMapping("/search/by-visit-date-and-status")
     public Page<ClientDtoResponse> findByStatusAndLastVisitDateBetween(
             @ParameterObject
-            @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam("clientStatus") ClientStatus status,
-            @RequestParam("lastVisitDateAfter") LocalDate lastVisitDateAfter,
-            @RequestParam("lastVisitDateBefore") LocalDate lastVisitDateBefore
+            @RequestParam("lastVisitDateAfter") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate lastVisitDateAfter,
+            @RequestParam("lastVisitDateBefore") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate lastVisitDateBefore
     ){
         return clientService.findByStatusAndLastVisitDateBetween(status,lastVisitDateAfter, lastVisitDateBefore, pageable);
     }
