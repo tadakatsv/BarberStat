@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ua.chekmaryov.barber_stat.dto.offers.OfferDtoRequest;
 import ua.chekmaryov.barber_stat.dto.offers.OfferDtoResponse;
@@ -24,6 +25,7 @@ public class OfferController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public OfferDtoResponse createOffer(
             @Valid @RequestBody OfferDtoRequest request
             ){
@@ -51,7 +53,7 @@ public class OfferController {
         return offerService.updateById(id,request);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search/by-name")
     public Page<OfferDtoResponse> findByName(
             @ParameterObject @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
             @RequestParam("name") String name
