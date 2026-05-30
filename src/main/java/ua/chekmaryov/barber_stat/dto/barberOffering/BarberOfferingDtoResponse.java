@@ -12,6 +12,6 @@ public record BarberOfferingDtoResponse(
         Long offerId,
         String offerName,
         BigDecimal price,
-        Long customTime
+        Integer customTime
 ) {
 }
