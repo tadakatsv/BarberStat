@@ -20,6 +20,6 @@ public record BarberOfferingDtoCreateRequest(
 
         @NotNull(message = "Duration is required")
         @Positive(message = "Duration must be greater than zero")
-        Integer durationMinutes
+        Integer customTime
 ) {
 }
