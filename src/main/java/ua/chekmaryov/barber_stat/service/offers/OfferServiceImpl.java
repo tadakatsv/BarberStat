@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ua.chekmaryov.barber_stat.dto.offers.OfferDtoRequest;
 import ua.chekmaryov.barber_stat.dto.offers.OfferDtoResponse;
 import ua.chekmaryov.barber_stat.entity.Offer;
+import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
 import ua.chekmaryov.barber_stat.mapper.OfferMapper;
 import ua.chekmaryov.barber_stat.repository.OfferRepository;
@@ -29,6 +30,9 @@ public class OfferServiceImpl implements OfferService {
     @Transactional
     public OfferDtoResponse create(OfferDtoRequest request) {
         log.info("Request to make new offer {}", request.name());
+        if(offerRepository.existsOfferByName(request.name().trim())){
+            throw new AlreadyExistsException("Offer by name" + request.name() + "already exists");
+        }
         Offer offer = offerRepository.save(offerMapper.dtoToEntity(request));
         log.debug("Offer {} was saved ID:{}",offer.getName(),offer.getId());
         return offerMapper.toResponse(offer);
@@ -59,6 +63,9 @@ public class OfferServiceImpl implements OfferService {
         log.info("Updating offer with ID: {}",id);
         Offer offer = offerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Offer not found with id: " + id));
+        if(offerRepository.existsOfferByName(request.name().trim())){
+            throw new AlreadyExistsException("Offer by name" + request.name() + "already exists");
+        }
         Offer updated = offerRepository.save(offerMapper.dtoUpdateToEntity(request,offer));
         log.debug("Offer ID {} successfully updated", id);
         return offerMapper.toResponse(updated);
