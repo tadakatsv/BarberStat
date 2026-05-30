@@ -110,15 +110,15 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
-    public Page<ClientDtoResponse> findByStatusAndLastVisitDateBetween(ClientStatus status, LocalDate lastVisitDateAfter, LocalDate lastVisitDateBefore, Pageable pageable) {
-        log.info("Attempting to find client between {} and {}", lastVisitDateAfter,lastVisitDateBefore);
-        if (lastVisitDateAfter.isAfter(lastVisitDateBefore)){
-            throw new BadRequestException("Start date (" + lastVisitDateAfter + ") cannot be after end date (" + lastVisitDateBefore + ")");
+    public Page<ClientDtoResponse> findByStatusAndLastVisitDateBetween(ClientStatus status, LocalDate start, LocalDate end, Pageable pageable) {
+        log.info("Attempting to find client between {} and {}", start,end);
+        if (start.isAfter(end)){
+            throw new BadRequestException("Start date (" + start + ") cannot be after end date (" + end + ")");
         }
-        if ((LocalDate.now().isBefore(lastVisitDateAfter) || ((LocalDate.now().isBefore(lastVisitDateBefore))))){
+        if ((LocalDate.now().isBefore(start) || ((LocalDate.now().isBefore(end))))){
             throw new BadRequestException("Search dates cannot be in the future. Today is " + LocalDate.now());
         }
-        Page<ClientDtoResponse> clients = clientRepository.findClientsByStatusAndLastVisitDateBetween(status,lastVisitDateAfter,lastVisitDateBefore,pageable)
+        Page<ClientDtoResponse> clients = clientRepository.findClientsByStatusAndLastVisitDateBetween(status,start,end,pageable)
                 .map(clientMapper::toResponse);
         log.debug("Search complete. Found {} clients matching the criteria", clients.getTotalElements());
         return clients;
