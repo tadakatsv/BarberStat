@@ -31,7 +31,7 @@ public class Salary {
     private LocalDate periodEnd;
 
     @Column(name = "total_sum", nullable = false)
-    private BigDecimal actualPrice;
+    private BigDecimal totalSum;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
