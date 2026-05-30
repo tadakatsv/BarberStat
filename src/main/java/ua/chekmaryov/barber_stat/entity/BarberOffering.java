@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "barber_offering")
+@Table(name = "barber_offerings")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,5 +31,5 @@ public class BarberOffering {
     private BigDecimal price;
 
     @Column(name = "custom_time",nullable = false)
-    private Long customTime;
+    private Integer customTime;
 }
