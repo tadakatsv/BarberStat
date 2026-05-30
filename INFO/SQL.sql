@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS offers (
     name VARCHAR(100) NOT NULL
     );
 
-CREATE TABLE IF NOT EXISTS barber_offering (
+CREATE TABLE IF NOT EXISTS barber_offerings (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     barber_id BIGINT NOT NULL REFERENCES barbers(id) ON DELETE CASCADE,
     offer_id BIGINT NOT NULL REFERENCES offers(id) ON DELETE CASCADE,
@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS barber_offering (
     CONSTRAINT uk_barber_offering UNIQUE (barber_id, offer_id)
     );
 
+//Сделать предпологаемую длительность и actual длительность ?
 CREATE TABLE IF NOT EXISTS visits (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     client_id BIGINT NOT NULL REFERENCES clients(id),
@@ -44,6 +45,7 @@ CREATE TABLE IF NOT EXISTS visits (
     actual_price DECIMAL(10, 2) NOT NULL,
     actual_percent_barber INT NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'PLANNED',
+    duration INT NOT NULL,
     notes TEXT
     );
 
