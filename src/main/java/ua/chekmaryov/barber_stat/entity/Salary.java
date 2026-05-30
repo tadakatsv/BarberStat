@@ -1,11 +1,19 @@
 package ua.chekmaryov.barber_stat.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ua.chekmaryov.barber_stat.enums.SalaryStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "salaries")
 public class Salary {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
