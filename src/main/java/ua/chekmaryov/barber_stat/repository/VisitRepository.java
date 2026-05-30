@@ -45,7 +45,6 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
             @Param("newEnd") LocalDateTime newEnd
     );
 
-    boolean existsByBarberIdAndVisitTime(Long barberId, Instant visitTime);
     @Query("""
         SELECT COUNT(v) > 0 FROM Visit v 
         WHERE v.barber.id = :barberId 
@@ -61,4 +60,17 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
             @Param("newEnd") LocalDateTime newEnd
     );
 
+
+    @Query("""
+        SELECT SUM(v.actualPrice * (v.actualBarberPercentage / 100.0)) FROM Visit v 
+        WHERE v.barber.id = :barberId 
+          AND v.status = 'COMPLETED'
+          AND :newStart < v.visitTime 
+          AND :newEnd > v.visitTime
+    """)
+    Optional<BigDecimal> sumSalaryForBarber(
+            @Param("barberId") Long barberId,
+            @Param("newStart") LocalDateTime newStart,
+            @Param("newEnd") LocalDateTime newEnd
+    );
 }
