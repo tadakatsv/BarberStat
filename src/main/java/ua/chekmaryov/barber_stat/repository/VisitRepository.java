@@ -32,7 +32,18 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
 
     //boolean existsByVisitTimeBetweenAndBarber_IdAndStatus(LocalDateTime visitTimeAfter, LocalDateTime visitTimeBefore, Long barberId, VisitStatus status);
 
-    List<Visit> findByBarberIdAndVisitTimeBetween(Long barberId, Instant start, Instant end);
+    @Query("""
+        SELECT COUNT(v) > 0 FROM Visit v 
+        WHERE v.barber.id = :barberId 
+          AND v.status != 'CANCELLED'
+          AND :newStart < (v.visitTime + v.durationMinutes minute) 
+          AND :newEnd > v.visitTime
+    """)
+    boolean hasOverlappingVisit(
+            @Param("barberId") Long barberId,
+            @Param("newStart") LocalDateTime newStart,
+            @Param("newEnd") LocalDateTime newEnd
+    );
 
     boolean existsByBarberIdAndVisitTime(Long barberId, Instant visitTime);
 }
