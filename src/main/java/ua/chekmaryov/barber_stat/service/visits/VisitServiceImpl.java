@@ -101,6 +101,10 @@ public class VisitServiceImpl implements VisitService{
         LocalDateTime visitTimeStart;
         LocalDateTime visitTimeEnd;
         Integer duration;
+        if(request.status() == VisitStatus.COMPLETED && visit.getStatus() != VisitStatus.COMPLETED){
+            Client client = visit.getClient();
+            client.setLastVisitDate(visit.getVisitTime().toLocalDate());
+        }
         if (request.durationMinutes() !=null) {
             duration = request.durationMinutes();
         }
