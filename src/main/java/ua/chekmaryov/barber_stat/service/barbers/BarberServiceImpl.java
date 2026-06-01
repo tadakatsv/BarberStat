@@ -73,9 +73,11 @@ public class BarberServiceImpl implements BarberService {
         Barber barber = barberRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Barber not found with id: " + id));
         log.debug("Retrieved barber:{} {}", barber.getFirstName(), barber.getLastName());
-        if (!Objects.equals(barber.getPhone(), request.phone().replaceAll("\\s+",""))){
-            if(barberRepository.existsByPhone(request.phone().replaceAll("\\s+",""))){
-                throw new AlreadyExistsException("Barber from request with " + request.phone() +" already exists");
+        if (request.phone() != null) {
+            if (!Objects.equals(barber.getPhone(), request.phone().replaceAll("\\s+",""))){
+                if(barberRepository.existsByPhone(request.phone().replaceAll("\\s+",""))){
+                    throw new AlreadyExistsException("Barber from request with " + request.phone() +" already exists");
+                }
             }
         }
         Barber updated = barberRepository.save(barberMapper.dtoUpdateToEntity(request,barber));
