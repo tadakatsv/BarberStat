@@ -67,6 +67,9 @@ public class VisitServiceImpl implements VisitService{
         }
         else {duration = request.durationMinutes();}
         LocalDateTime visitTimeEnd = request.visitTime().plusMinutes(duration);
+        if (request.visitTime().isBefore(LocalDateTime.now())){
+            throw new BadRequestException("You can't make a visit on past");
+        }
         if (visitRepository.hasOverlappingVisit(barber.getId(),request.visitTime(),visitTimeEnd)){
             throw new AlreadyExistsException("Barber already booked on this time " + request.visitTime());
         }
