@@ -15,14 +15,14 @@ import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AlreadyExistsException.class)
-    public ProblemDetail handleBadRequestApiException(AlreadyExistsException exception) {
-        log.error("Already exists! " , exception);
+    public ProblemDetail handleAlreadyExistsApiException(AlreadyExistsException exception) {
+        log.warn("Already exists! {}" , exception.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,exception.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ProblemDetail handleBadRequestApiException(ResourceNotFoundException exception) {
-        log.error("ResourceNotFoundException! " , exception);
+    public ProblemDetail handleResourceNotFoundApiException(ResourceNotFoundException exception) {
+        log.warn("ResourceNotFoundException! {}" , exception.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,exception.getMessage());
     }
 
