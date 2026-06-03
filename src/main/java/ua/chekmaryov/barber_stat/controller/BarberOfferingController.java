@@ -53,6 +53,7 @@ public class BarberOfferingController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public boolean deleteBarberOfferingById(
             @PathVariable("id") Long id){
         return service.deleteById(id);
