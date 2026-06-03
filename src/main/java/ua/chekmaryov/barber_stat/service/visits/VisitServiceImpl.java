@@ -9,6 +9,7 @@ import ua.chekmaryov.barber_stat.dto.visits.VisitDtoCreateRequest;
 import ua.chekmaryov.barber_stat.dto.visits.VisitDtoResponse;
 import ua.chekmaryov.barber_stat.dto.visits.VisitDtoUpdateRequest;
 import ua.chekmaryov.barber_stat.entity.*;
+import ua.chekmaryov.barber_stat.enums.ClientStatus;
 import ua.chekmaryov.barber_stat.enums.VisitStatus;
 import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 import ua.chekmaryov.barber_stat.exception.BadRequestException;
@@ -17,6 +18,7 @@ import ua.chekmaryov.barber_stat.mapper.VisitMapper;
 import ua.chekmaryov.barber_stat.repository.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Service
 @Slf4j
@@ -67,8 +69,8 @@ public class VisitServiceImpl implements VisitService{
         }
         else {duration = request.durationMinutes();}
         LocalDateTime visitTimeEnd = request.visitTime().plusMinutes(duration);
-        if (request.visitTime().isBefore(LocalDateTime.now())){
-            throw new BadRequestException("You can't make a visit on past");
+        if (request.visitTime().isBefore(LocalDateTime.now(ZoneId.of("Europe/Kyiv")))){
+            throw new BadRequestException("You can't make a visit on past " + request.visitTime());
         }
         if (visitRepository.hasOverlappingVisit(barber.getId(),request.visitTime(),visitTimeEnd)){
             throw new AlreadyExistsException("Barber already booked on this time " + request.visitTime());
@@ -92,7 +94,7 @@ public class VisitServiceImpl implements VisitService{
     public VisitDtoResponse getById(Long id) {
         log.info("Attempt to find visit with id:{}",id);
         Visit visit = visitRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No visit by that id"));
+                .orElseThrow(() -> new ResourceNotFoundException("No visit by that id " + id));
         log.debug("Found visit with id {}",id);
         return mapper.toResponse(visit);
     }
@@ -102,7 +104,7 @@ public class VisitServiceImpl implements VisitService{
     public VisitDtoResponse updateById(Long id, VisitDtoUpdateRequest request) {
         log.info("Attempt to find visit with id:{}",id);
         Visit visit = visitRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No visit by that id"));
+                .orElseThrow(() -> new ResourceNotFoundException("No visit by that id " + id));
         log.debug("Found visit with id {}",id);
         LocalDateTime visitTimeStart;
         LocalDateTime visitTimeEnd;
@@ -110,6 +112,7 @@ public class VisitServiceImpl implements VisitService{
         if(request.status() == VisitStatus.COMPLETED && visit.getStatus() != VisitStatus.COMPLETED){
             Client client = visit.getClient();
             client.setLastVisitDate(visit.getVisitTime().toLocalDate());
+            client.setStatus(ClientStatus.ACTIVE);
         }
         if (request.durationMinutes() !=null) {
             duration = request.durationMinutes();
@@ -141,7 +144,7 @@ public class VisitServiceImpl implements VisitService{
     public VisitDtoResponse cancelVisitById(Long id) {
         log.debug("Attempting to cancel visit with ID: {}", id);
         Visit visit = visitRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No visit by that id"));
+                .orElseThrow(() -> new ResourceNotFoundException("No visit by that id " + id));
         visit.setStatus(VisitStatus.CANCELLED);
         log.info("Visit with ID: {} was successfully CANCELLED", id);
         return mapper.toResponse(visit);
@@ -149,7 +152,7 @@ public class VisitServiceImpl implements VisitService{
 
     @Override
     @Transactional
-    public Page<VisitDtoResponse> findVisitByClient_IdAndStatus(Long clientId, VisitStatus status, Pageable pageable) {
+    public Page<VisitDtoResponse> findVisitsByClient_IdAndStatus(Long clientId, VisitStatus status, Pageable pageable) {
         log.debug("Searching visits for client ID: {} with status {}", clientId, status);
         Page<Visit> neededVisits = visitRepository.findVisitsByClient_IdAndStatus(clientId,status,pageable);
         log.debug("Found {} visits for client ID: {}", neededVisits.getNumberOfElements(), clientId);
