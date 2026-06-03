@@ -1,5 +1,6 @@
 package ua.chekmaryov.barber_stat.service.clients;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,9 +44,18 @@ public class ClientServiceImplTest {
     @InjectMocks
     private ClientServiceImpl clientService;
 
-    @Test
-    public void create_ShouldReturnResponse_WhenNoClientByPhone(){
-        ClientDtoCreateRequest request = ClientDtoCreateRequest.builder()
+    private ClientDtoCreateRequest request;
+    private Client clientBefore;
+    private Client clientAfter;
+    private ClientDtoResponse response;
+    private Pageable pageable;
+    private Page<Client> allClients;
+    private Long id;
+
+    @BeforeEach
+    void setUp() {
+        id = 1L;
+        request = ClientDtoCreateRequest.builder()
                 .firstName("John")
                 .lastName("Marston")
                 .phone("380666666666")
@@ -54,9 +64,9 @@ public class ClientServiceImplTest {
                 .lastVisitDate(null)
                 .notes(null)
                 .build();
-        Client clientBefore = new Client(null,"John","Marston", "380666666666", LocalDate.of(1873, Month.JUNE,22), ClientStatus.ACTIVE, null,null);
-        Client clientAfter = new Client(1L,"John","Marston", "380666666666", LocalDate.of(1873, Month.JUNE,22), ClientStatus.ACTIVE, null,null);
-        ClientDtoResponse response = ClientDtoResponse.builder()
+        clientBefore = new Client(null,"John","Marston", "380666666666", LocalDate.of(1873, Month.JUNE,22), ClientStatus.ACTIVE, null,null);
+        clientAfter = new Client(1L,"John","Marston", "380666666666", LocalDate.of(1873, Month.JUNE,22), ClientStatus.ACTIVE, null,null);
+        response = ClientDtoResponse.builder()
                 .id(1L)
                 .fullName("John Marston")
                 .phone("380666666666")
@@ -65,6 +75,12 @@ public class ClientServiceImplTest {
                 .lastVisitDate(null)
                 .notes(null)
                 .build();
+        pageable = PageRequest.of(0, 10);
+        allClients = new PageImpl<>(List.of(clientAfter),pageable,1);
+    }
+
+    @Test
+    public void create_ShouldReturnResponse_WhenNoClientByPhone(){
         when(clientRepository.existsByPhone(request.phone())).thenReturn(false);
         when(clientMapper.dtoToEntity(request)).thenReturn(clientBefore);
         when(clientRepository.save(clientBefore)).thenReturn(clientAfter);
@@ -84,22 +100,12 @@ public class ClientServiceImplTest {
 
     @Test
     public void create_ShouldThrowAlreadyExistsException_WhenNoClientByPhone(){
-        ClientDtoCreateRequest request = ClientDtoCreateRequest.builder()
-                .firstName("John")
-                .lastName("Marston")
-                .phone("380666666666")
-                .birthDate(LocalDate.of(1873, Month.JUNE,22))
-                .status(null)
-                .lastVisitDate(null)
-                .notes(null)
-                .build();
         when(clientRepository.existsByPhone(request.phone())).thenReturn(true);
 
         Exception exception = assertThrows(AlreadyExistsException.class, () -> clientService.create(request));
 
         String expectedMessage = "Client with " + request.phone() +" already exists";
         String actualMessage = exception.getMessage();
-        // 3. ASSERT
         assertTrue(actualMessage.contains(expectedMessage));
 
         verify(clientRepository).existsByPhone(anyString());
@@ -110,21 +116,8 @@ public class ClientServiceImplTest {
 
     @Test
     public void getAll_ShouldReturnPageOfClients_WhenBarbersExists(){
-        Pageable pageable = PageRequest.of(0, 10); // Перша сторінка, 10 записів
-        Client client = new Client(1L,"John","Marston", "380666666666", LocalDate.of(1873, Month.JUNE,22), ClientStatus.ACTIVE, null,null);// Перша сторінка, 10 записів
-        Page<Client> allClients = new PageImpl<>(List.of(client),pageable,1);
-        ClientDtoResponse response = ClientDtoResponse.builder()
-                .id(1L)
-                .fullName("John Marston")
-                .phone("380666666666")
-                .birthDate(LocalDate.of(1873, Month.JUNE,22))
-                .status(ClientStatus.ACTIVE)
-                .lastVisitDate(null)
-                .notes(null)
-                .build();
-
         when(clientRepository.findAll(any(Pageable.class))).thenReturn(allClients);
-        when(clientMapper.toResponse(client)).thenReturn(response);
+        when(clientMapper.toResponse(clientAfter)).thenReturn(response);
 
         Page<ClientDtoResponse> result = clientService.getAll(pageable);
 
@@ -138,8 +131,6 @@ public class ClientServiceImplTest {
 
     @Test
     public void getAll_shouldReturnEmptyPage_whenNoClients(){
-        Pageable pageable = PageRequest.of(0, 10); // Перша сторінка, 10 записів
-
         when(clientRepository.findAll(pageable)).thenReturn(Page.empty());
 
         Page<ClientDtoResponse> result = clientService.getAll(pageable);
@@ -155,19 +146,9 @@ public class ClientServiceImplTest {
     @Test
     public void getById_ShouldReturnClientDtoResponse_WhenBarberById(){
         Long id =1L;
-        Client client = new Client(1L,"John","Marston", "380666666666", LocalDate.of(1873, Month.JUNE,22), ClientStatus.ACTIVE, null,null);
-        ClientDtoResponse response = ClientDtoResponse.builder()
-                .id(1L)
-                .fullName("John Marston")
-                .phone("380666666666")
-                .birthDate(LocalDate.of(1873, Month.JUNE,22))
-                .status(ClientStatus.ACTIVE)
-                .lastVisitDate(null)
-                .notes(null)
-                .build();
 
-        when(clientRepository.findById(id)).thenReturn(Optional.of(client));
-        when(clientMapper.toResponse(client)).thenReturn(response);
+        when(clientRepository.findById(id)).thenReturn(Optional.of(clientAfter));
+        when(clientMapper.toResponse(clientAfter)).thenReturn(response);
 
         ClientDtoResponse actualResponse = clientService.getById(id);
 
@@ -181,8 +162,6 @@ public class ClientServiceImplTest {
 
     @Test
     public void getById_ShouldThrowResourceNotFoundException_WhenNoClientById(){
-        Long id = 1L;
-
         when(clientRepository.findById(id)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> clientService.getById(id));
@@ -196,49 +175,51 @@ public class ClientServiceImplTest {
     }
 
     @Test
-    public void updateById_ShouldReturnResponse_WhenClientById(){
-        Long id = 1L;
-        ClientDtoUpdateRequest request = ClientDtoUpdateRequest.builder()
+    public void updateById_ShouldReturnResponse_WhenClientById() {
+        ClientDtoUpdateRequest updateRequest = ClientDtoUpdateRequest.builder()
                 .firstName("John")
                 .lastName("Marston")
                 .phone("380666666666")
-                .birthDate(LocalDate.of(1873, Month.JUNE,22))
+                .birthDate(LocalDate.of(1873, Month.JUNE, 22))
                 .status(ClientStatus.BLACKLISTED)
                 .lastVisitDate(null)
                 .notes(null)
                 .build();
-        Client client = new Client(null,"John","Marston", "380666666666", LocalDate.of(1873, Month.JUNE,22), ClientStatus.ACTIVE, null,null);
-        Client clientBefore = new Client(1L,"John","Marston", "380666666666", LocalDate.of(1873, Month.JUNE,22), ClientStatus.BLACKLISTED, null,null);
-        Client clientAfter = new Client(1L,"John","Marston", "380666666666", LocalDate.of(1873, Month.JUNE,22), ClientStatus.BLACKLISTED, null,null);
-        ClientDtoResponse response = ClientDtoResponse.builder()
-                .id(1L)
+
+        Client clientToSave = new Client(id, "John", "Marston", "380666666666",
+                LocalDate.of(1873, Month.JUNE, 22), ClientStatus.BLACKLISTED, null, null);
+
+        ClientDtoResponse updatedResponse = ClientDtoResponse.builder()
+                .id(id)
                 .fullName("John Marston")
                 .phone("380666666666")
-                .birthDate(LocalDate.of(1873, Month.JUNE,22))
+                .birthDate(LocalDate.of(1873, Month.JUNE, 22))
                 .status(ClientStatus.BLACKLISTED)
                 .lastVisitDate(null)
                 .notes(null)
                 .build();
 
-        when(clientRepository.findById(id)).thenReturn(Optional.of(client));
-        when(clientMapper.dtoUpdateToEntity(request,client)).thenReturn(clientBefore);
-        when(clientRepository.save(clientBefore)).thenReturn(clientAfter);
-        when(clientMapper.toResponse(clientAfter)).thenReturn(response);
+        when(clientRepository.findById(id)).thenReturn(Optional.of(clientBefore));
 
-        ClientDtoResponse actualResponse = clientService.updateById(id,request);
+        when(clientMapper.dtoUpdateToEntity(updateRequest, clientBefore)).thenReturn(clientToSave);
+
+        when(clientRepository.save(clientToSave)).thenReturn(clientToSave);
+
+        when(clientMapper.toResponse(clientToSave)).thenReturn(updatedResponse);
+
+        ClientDtoResponse actualResponse = clientService.updateById(id, updateRequest);
 
         assertNotNull(actualResponse);
-        assertEquals(response,actualResponse);
+        assertEquals(updatedResponse, actualResponse);
 
-        verify(clientRepository).findById(anyLong());
-        verify(clientMapper).dtoUpdateToEntity(any(ClientDtoUpdateRequest.class),any(Client.class));
-        verify(clientRepository).save(any(Client.class));
-        verify(clientMapper).toResponse(any(Client.class));
+        verify(clientRepository).findById(id);
+        verify(clientMapper).dtoUpdateToEntity(updateRequest, clientBefore);
+        verify(clientRepository).save(clientToSave);
+        verify(clientMapper).toResponse(clientToSave);
     }
 
     @Test
     public void updateById_ShouldThrowAlreadyExistsException_WhenPhoneFromClientRequestAlreadyExist(){
-        Long id = 1L;
         ClientDtoUpdateRequest request = ClientDtoUpdateRequest.builder()
                 .firstName("John")
                 .lastName("Marston")
@@ -268,7 +249,6 @@ public class ClientServiceImplTest {
 
     @Test
     public void updateById_ShouldThrowResourceNotFoundException_WhenNoClientById(){
-        Long id = 1L;
         ClientDtoUpdateRequest request = ClientDtoUpdateRequest.builder()
                 .firstName("John")
                 .lastName("Marston")
@@ -296,8 +276,6 @@ public class ClientServiceImplTest {
 
     @Test
     public void deleteById_ShouldReturnResponse_WhenClientById(){
-        Long id = 1L;
-        Client client = new Client(null,"John","Marston", "380666666666", LocalDate.of(1873, Month.JUNE,22), ClientStatus.ACTIVE, null,null);
         ClientDtoResponse response = ClientDtoResponse.builder()
                 .id(1L)
                 .fullName("John Marston")
@@ -307,8 +285,8 @@ public class ClientServiceImplTest {
                 .lastVisitDate(null)
                 .notes(null)
                 .build();
-        when(clientRepository.findById(id)).thenReturn(Optional.of(client));
-        when(clientMapper.toResponse(client)).thenReturn(response);
+        when(clientRepository.findById(id)).thenReturn(Optional.of(clientBefore));
+        when(clientMapper.toResponse(clientBefore)).thenReturn(response);
 
         ClientDtoResponse actualResponse = clientService.deleteById(id);
 
@@ -322,7 +300,6 @@ public class ClientServiceImplTest {
 
     @Test
     public void deleteById_ShouldReturnResponse_WhenNoClientById(){
-        Long id = 1L;
         when(clientRepository.findById(id)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ResourceNotFoundException.class,() -> clientService.deleteById(id));
@@ -338,18 +315,8 @@ public class ClientServiceImplTest {
     @Test
     public void getByPhone_ShouldReturnResponse_WhenClientByPhone(){
         String phone = "380666666666";
-        Client client = new Client(1L,"John","Marston", "380666666666", LocalDate.of(1873, Month.JUNE,22), ClientStatus.ACTIVE, null,null);
-        ClientDtoResponse response = ClientDtoResponse.builder()
-                .id(1L)
-                .fullName("John Marston")
-                .phone("380666666666")
-                .birthDate(LocalDate.of(1873, Month.JUNE,22))
-                .status(ClientStatus.ACTIVE)
-                .lastVisitDate(null)
-                .notes(null)
-                .build();
-        when(clientRepository.findClientByPhone(phone)).thenReturn(Optional.of(client));
-        when(clientMapper.toResponse(client)).thenReturn(response);
+        when(clientRepository.findClientByPhone(phone)).thenReturn(Optional.of(clientAfter));
+        when(clientMapper.toResponse(clientAfter)).thenReturn(response);
 
         ClientDtoResponse actualResponse = clientService.getByPhone(phone);
 
@@ -377,7 +344,6 @@ public class ClientServiceImplTest {
 
     @Test
     public void findByFirstNameAndLastName_ShouldReturnPage_WhenClientExist() {
-        Pageable pageable = PageRequest.of(0, 10);
         Client client = new Client(1L, "John", "Marston", "380666666666", LocalDate.of(1873, Month.JUNE, 22), ClientStatus.ACTIVE, null, null);
         ClientDtoResponse response = ClientDtoResponse.builder()
                 .id(1L)
@@ -406,7 +372,6 @@ public class ClientServiceImplTest {
 
     @Test
     public void findByFirstNameAndLastName_ShouldReturnPage_WhenClientDontExist() {
-        Pageable pageable = PageRequest.of(0, 10);
 
         when(clientRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase("John", "Marston", pageable)).thenReturn(Page.empty());
 
@@ -422,8 +387,7 @@ public class ClientServiceImplTest {
 
     @Test
     public void findByStatusAndLastVisitDateBetween_ShouldReturnPage_WhenClientsExist(){
-        Pageable pageable = PageRequest.of(0, 10);
-        Client client = new Client(1L, "John", "Marston", "380666666666", LocalDate.of(1873, Month.JUNE, 22), ClientStatus.INACTIVE, LocalDate.of(2025,7,2), null);
+        Client client = new Client(1L, "John", "Marston", "380666666666", LocalDate.of(1873, Month.JUNE, 22), ClientStatus.ACTIVE, LocalDate.of(2025,7,2), null);
         ClientDtoResponse response = ClientDtoResponse.builder()
                 .id(1L)
                 .fullName("John Marston")
@@ -450,8 +414,6 @@ public class ClientServiceImplTest {
 
     @Test
     public void findByStatusAndLastVisitDateBetween_ShouldReturnPage_WhenNoClientsExist(){
-        Pageable pageable = PageRequest.of(0, 10);
-
         when(clientRepository.findClientsByStatusAndLastVisitDateBetween(ClientStatus.ACTIVE,LocalDate.of(2025,7,1),LocalDate.of(2025,7,5),pageable)).thenReturn(Page.empty());
 
         Page<ClientDtoResponse> actualResponse = clientService.findByStatusAndLastVisitDateBetween(ClientStatus.ACTIVE,LocalDate.of(2025,7,1),LocalDate.of(2025,7,5),pageable);
@@ -466,7 +428,6 @@ public class ClientServiceImplTest {
 
     @Test
     public void findByStatusAndLastVisitDateBetween_ShouldThrowBadRequestException_WhenStartDateAfterEndDate(){
-        Pageable pageable = PageRequest.of(0, 10);
         LocalDate lastVisitDateAfter = LocalDate.of(2025, 7, 7);
         LocalDate lastVisitDateBefore = LocalDate.of(2025, 7, 5);
         Exception exception = assertThrows(BadRequestException.class, () ->
@@ -483,9 +444,8 @@ public class ClientServiceImplTest {
 
     @Test
     public void findByStatusAndLastVisitDateBetween_ShouldThrowBadRequestException_WhenDateFromFuture(){
-        Pageable pageable = PageRequest.of(0, 10);
-        LocalDate lastVisitDateAfter = LocalDate.of(2026, 7, 7);
-        LocalDate lastVisitDateBefore = LocalDate.of(2026, 7, 9);
+        LocalDate lastVisitDateAfter = LocalDate.now().plusDays(1);
+        LocalDate lastVisitDateBefore = LocalDate.now().plusDays(3);
         Exception exception = assertThrows(BadRequestException.class, () ->
                 clientService.findByStatusAndLastVisitDateBetween(ClientStatus.ACTIVE, lastVisitDateAfter, lastVisitDateBefore,pageable));
 
