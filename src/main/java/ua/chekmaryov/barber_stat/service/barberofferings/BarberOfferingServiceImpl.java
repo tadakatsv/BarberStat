@@ -79,8 +79,10 @@ public class BarberOfferingServiceImpl implements BarberOfferingService {
     @Override
     @Transactional
     public BarberOfferingDtoResponse updateById(Long id, BarberOfferingDtoUpdateRequest request) {
+        log.info("Request to find barber offering with {} id",id);
         BarberOffering barberOffering = barberOfferingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No barber offering with ID:" + id));
+        log.debug("Offer was found with name {} for barber {} {}",barberOffering.getOffer().getName(), barberOffering.getBarber().getFirstName(), barberOffering.getBarber().getLastName());
         BarberOffering updated = barberOfferingRepository.save(mapper.dtoUpdateToEntity(request,barberOffering));
         return mapper.toResponse(updated);
     }
@@ -88,24 +90,31 @@ public class BarberOfferingServiceImpl implements BarberOfferingService {
     @Override
     @Transactional
     public boolean deleteById(Long id) {
-        barberOfferingRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No barber offering with ID:" + id));
+        if(!barberOfferingRepository.existsById(id)){
+            throw new ResourceNotFoundException("No barber offering with ID:" + id);
+        }
+        log.info("Deleting barber offering with id {}", id);
         barberOfferingRepository.deleteById(id);
+        log.debug("Deleted barberOffering with id {}",id);
         return true;
     }
 
     @Override
     @Transactional
     public BarberOfferingDtoResponse findByBarberIdAndOfferId(Long barberId, Long offerId) {
+        log.info("Searching for barber offering with barber id {} and offerId {}",barberId,offerId);
         BarberOffering barberOffering = barberOfferingRepository.findByBarberIdAndOfferId(barberId,offerId)
                 .orElseThrow(() -> new ResourceNotFoundException("No barber offering with barberID " + barberId + "and offerID " + offerId));
+        log.debug("Find barberOffering with offerId {} and barberId {}, barber offering id {}",barberId,offerId,barberOffering.getId());
         return mapper.toResponse(barberOffering);
     }
 
     @Override
     @Transactional
     public Page<BarberOfferingDtoResponse> findByBarber_Id(Long barberId, Pageable pageable) {
+        log.info("Request to get all barber by barber id {} offerings",barberId);
         Page<BarberOffering> neededBarberOfferings = barberOfferingRepository.findBarberOfferingsByBarber_Id(barberId,pageable);
+        log.debug("Retrieved {} records from database",neededBarberOfferings.getTotalElements());
         return neededBarberOfferings
                 .map(mapper::toResponse);
     }
@@ -113,7 +122,9 @@ public class BarberOfferingServiceImpl implements BarberOfferingService {
     @Override
     @Transactional
     public Page<BarberOfferingDtoResponse> findByOffer_Id(Long offerId, Pageable pageable) {
+        log.info("Request to get all barber by offer id {} offerings",offerId);
         Page<BarberOffering> neededBarberOfferings = barberOfferingRepository.findBarberOfferingsByOffer_Id(offerId,pageable);
+        log.debug("Retrieved {} records from database",neededBarberOfferings.getTotalElements());
         return neededBarberOfferings
                 .map(mapper::toResponse);
     }
