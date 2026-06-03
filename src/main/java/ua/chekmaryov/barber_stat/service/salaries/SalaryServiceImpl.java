@@ -62,10 +62,11 @@ public class SalaryServiceImpl implements SalaryService {
     @Transactional(readOnly = true)
     public Page<SalaryDtoResponse> findByBarber_Id(Long barberId, Pageable pageable) {
         log.info("Searching for barber with id: {}" ,barberId);
-        Barber barber = barberRepository.findById(barberId)
-                .orElseThrow(() -> new ResourceNotFoundException("Barber not found with id: " + barberId));
-        log.debug("Successfully found barber: {} (ID: {})", barber.getLastName(), barberId);
+        if(!barberRepository.existsById(barberId)){
+            throw new ResourceNotFoundException("Barber not found with id: " + barberId);
+        }
         Page<Salary> neededSalaries = salaryRepository.findSalariesByBarber_Id(barberId, pageable);
+        log.debug("Needed salaries was found quantity: " + neededSalaries.getTotalElements());
         return neededSalaries.map(mapper::toResponse);
     }
 
