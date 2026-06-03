@@ -1,5 +1,6 @@
 package ua.chekmaryov.barber_stat.service.offers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,17 +38,34 @@ public class OfferServiceImplTest {
     @InjectMocks
     private OfferServiceImpl offerService;
 
+    private Long id;
+    private String name;
+    private OfferDtoRequest request;
+    private Offer offerBefore;
+    private Offer offerAfter;
+    private OfferDtoResponse response;
+    private String newName;
+    private Pageable pageable;
+    private Page<Offer> offerPage;
+
+
+    @BeforeEach
+    void setUp() {
+        id=1L;
+        name = "Haircut";
+        request = new OfferDtoRequest(name);
+        offerBefore = new Offer(null, name);
+        offerAfter = new Offer(1L, name);
+        response = new OfferDtoResponse(1L, name);
+        newName = "Premium haircut";
+        pageable = PageRequest.of(0, 10);
+        offerPage = new PageImpl<>(List.of(offerAfter), pageable, 1);
+
+    }
+
     @Test
     public void create_ShouldReturnResponse_WhenNoOfferByName(){
-        String haircut = "Haircut";
-        OfferDtoRequest request = new OfferDtoRequest(haircut);
-
-        Offer offerBefore = new Offer(null, haircut);
-        Offer offerAfter = new Offer(1L, haircut);
-
-        OfferDtoResponse response = new OfferDtoResponse(1L, haircut);
-
-        when(offerRepository.existsOfferByName(haircut)).thenReturn(false);
+        when(offerRepository.existsOfferByName(name)).thenReturn(false);
         when(offerMapper.dtoToEntity(request)).thenReturn(offerBefore);
         when(offerRepository.save(offerBefore)).thenReturn(offerAfter);
         when(offerMapper.toResponse(offerAfter)).thenReturn(response);
@@ -65,10 +83,7 @@ public class OfferServiceImplTest {
 
     @Test
     public void create_ShouldThrowAlreadyExistsException_WhenOfferByName(){
-        String haircut = "Haircut";
-        OfferDtoRequest request = new OfferDtoRequest(haircut);
-
-        when(offerRepository.existsOfferByName(haircut)).thenReturn(true);
+        when(offerRepository.existsOfferByName(name)).thenReturn(true);
 
         Exception exception = assertThrows(AlreadyExistsException.class, () -> offerService.create(request));
         String expectedMessage = "Offer by name" + request.name() + "already exists";
@@ -84,16 +99,9 @@ public class OfferServiceImplTest {
 
     @Test
     public void getAll_ShouldReturnPageOfResponses_WhenOffersExist(){
-        Pageable pageable = PageRequest.of(0, 10); // Перша сторінка, 10 записів
 
-        Offer offer = new Offer(1L,"Haircut");
-
-        OfferDtoResponse response = new OfferDtoResponse(1L,"Haircut");
-
-        Page<Offer> barberPage = new PageImpl<>(List.of(offer), pageable, 1);
-
-        when(offerRepository.findAll(any(Pageable.class))).thenReturn(barberPage);
-        when(offerMapper.toResponse(offer)).thenReturn(response);
+        when(offerRepository.findAll(any(Pageable.class))).thenReturn(offerPage);
+        when(offerMapper.toResponse(offerAfter)).thenReturn(response);
 
         Page<OfferDtoResponse> actualResponse = offerService.getAll(pageable);
 
@@ -123,16 +131,8 @@ public class OfferServiceImplTest {
 
     @Test
     public void getById_ShouldReturnEmptyPage_WhenOffersById(){
-        String haircut = "Haircut";
-
-        Long id = 1L;
-
-        Offer offer = new Offer(1L,haircut);
-
-        OfferDtoResponse response = new OfferDtoResponse(1L, haircut);
-
-        when(offerRepository.findById(id)).thenReturn(Optional.of(offer));
-        when(offerMapper.toResponse(offer)).thenReturn(response);
+        when(offerRepository.findById(id)).thenReturn(Optional.of(offerAfter));
+        when(offerMapper.toResponse(offerAfter)).thenReturn(response);
 
         OfferDtoResponse actualResponse = offerService.getById(id);
 
@@ -145,8 +145,6 @@ public class OfferServiceImplTest {
 
     @Test
     public void getById_ShouldReturnEmptyPage_WhenNoOffersById(){
-        Long id = 1L;
-
         when(offerRepository.findById(id)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> offerService.getById(id));
@@ -161,13 +159,8 @@ public class OfferServiceImplTest {
 
     @Test
     public void updateById_ShouldReturnEmptyPage_WhenOfferByIdANDNoOfferByRequestName(){
-        String oldName = "Haircut";
-        String newName = "Premium haircut";
-
-        Long id = 1L;
-
         OfferDtoRequest request = new OfferDtoRequest(newName);
-        Offer offerOld = new Offer(id, oldName);
+        Offer offerOld = new Offer(id, name);
         Offer offerNew = new Offer(id,newName);
 
         OfferDtoResponse response = new OfferDtoResponse(id, newName);
@@ -193,8 +186,6 @@ public class OfferServiceImplTest {
 
     @Test
     public void updateById_ShouldThrowResourceNotFoundException_WhenNoOfferById(){
-        String newName = "Premium haircut";
-        Long id = 1L;
         OfferDtoRequest request = new OfferDtoRequest(newName);
 
         when(offerRepository.findById(id)).thenReturn(Optional.empty());
@@ -215,13 +206,8 @@ public class OfferServiceImplTest {
 
     @Test
     public void updateById_ShouldThrowAlreadyExistsException_WhenOfferByRequestName(){
-        String oldName = "Haircut";
-        String newName = "Premium haircut";
-
-        Long id = 1L;
-
         OfferDtoRequest request = new OfferDtoRequest(newName);
-        Offer offerOld = new Offer(id, oldName);
+        Offer offerOld = new Offer(id, name);
 
         when(offerRepository.findById(id)).thenReturn(Optional.of(offerOld));
         when(offerRepository.existsOfferByName(request.name().trim())).thenReturn(true);
@@ -241,18 +227,9 @@ public class OfferServiceImplTest {
 
     @Test
     public void findByName_ShouldReturnPageOfResponses_WhenOffersExist(){
-        Pageable pageable = PageRequest.of(0, 10); // Перша сторінка, 10 записів
 
-        String name = "Haircut";
-
-        Offer offer = new Offer(1L,"Haircut");
-
-        OfferDtoResponse response = new OfferDtoResponse(1L,"Haircut");
-
-        Page<Offer> barberPage = new PageImpl<>(List.of(offer), pageable, 1);
-
-        when(offerRepository.findByNameContainingIgnoreCase(name,pageable)).thenReturn(barberPage);
-        when(offerMapper.toResponse(offer)).thenReturn(response);
+        when(offerRepository.findByNameContainingIgnoreCase(name,pageable)).thenReturn(offerPage);
+        when(offerMapper.toResponse(offerAfter)).thenReturn(response);
 
         Page<OfferDtoResponse> actualResponse = offerService.findByName(name,pageable);
 
@@ -266,9 +243,6 @@ public class OfferServiceImplTest {
 
     @Test
     public void findByName_ShouldReturnEmptyPage_WhenNoOffersExist(){
-        Pageable pageable = PageRequest.of(0, 10);
-        String name = "Haircut";
-
         when(offerRepository.findByNameContainingIgnoreCase(name,pageable)).thenReturn(Page.empty());
 
         Page<OfferDtoResponse> actualResponse = offerService.findByName(name,pageable);
