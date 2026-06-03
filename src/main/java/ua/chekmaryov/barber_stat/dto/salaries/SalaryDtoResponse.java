@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public record SalaryDtoResponse(
         Long id,
         Long barberId,
-        String fullNameBarber,
+        String barberFullName,
         LocalDate periodStart,
         LocalDate periodEnd,
         BigDecimal totalSum,

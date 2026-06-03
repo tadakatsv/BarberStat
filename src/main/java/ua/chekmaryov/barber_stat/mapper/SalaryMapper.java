@@ -51,7 +51,7 @@ public class SalaryMapper {
         return SalaryDtoResponse.builder()
                 .id(salary.getId())
                 .barberId(salary.getBarber().getId())
-                .fullNameBarber(salary.getBarber().getFirstName() + " " + salary.getBarber().getLastName())
+                .barberFullName(salary.getBarber().getFirstName() + " " + salary.getBarber().getLastName())
                 .periodStart(salary.getPeriodStart())
                 .periodEnd(salary.getPeriodEnd())
                 .totalSum(salary.getTotalSum())
