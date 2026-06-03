@@ -332,17 +332,14 @@ public class BarberOfferingServiceImplTest {
     @Test
     public void deleteById_ShouldReturnResponse_WhenBarberOfferingExistById(){
         Long id = 1L;
-        Barber barber = new Barber(id,"Arthur","Morgan","380666666666", LocalDate.of(1868, Month.JUNE,22), BarberStatus.ACTIVE, BarberRole.TOP,50,null);
-        Offer offer = new Offer(id,"Haircut");
-        BarberOffering barberOffering = new BarberOffering(null,barber,offer, BigDecimal.valueOf(400),30);
 
-        when(barberOfferingRepository.findById(id)).thenReturn(Optional.of(barberOffering));
+        when(barberOfferingRepository.existsById(id)).thenReturn(true);
 
         boolean response = service.deleteById(id);
 
         assertTrue(response);
 
-        verify(barberOfferingRepository).findById(id);
+        verify(barberOfferingRepository).existsById(id);
         verify(barberOfferingRepository).deleteById(id);
     }
 
@@ -350,7 +347,7 @@ public class BarberOfferingServiceImplTest {
     public void deleteById_ShouldThrowResourceNotFoundException_WhenNoBarberOfferingExistById(){
         Long id = 1L;
 
-        when(barberOfferingRepository.findById(id)).thenReturn(Optional.empty());
+        when(barberOfferingRepository.existsById(id)).thenReturn(false);
 
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.deleteById(id));
         String expectedMessage = "No barber offering with ID:" + id;
@@ -358,7 +355,7 @@ public class BarberOfferingServiceImplTest {
 
         assertTrue(actualMessage.contains(expectedMessage));
 
-        verify(barberOfferingRepository).findById(id);
+        verify(barberOfferingRepository).existsById(id);
         verify(barberOfferingRepository,never()).deleteById(id);
     }
 
