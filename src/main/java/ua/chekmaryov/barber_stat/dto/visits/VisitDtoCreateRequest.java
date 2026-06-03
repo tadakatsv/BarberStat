@@ -1,5 +1,6 @@
 package ua.chekmaryov.barber_stat.dto.visits;
 
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import ua.chekmaryov.barber_stat.enums.VisitStatus;
@@ -16,6 +17,7 @@ public record VisitDtoCreateRequest(
         @NotNull(message = "Offer id cannot be null")
         Long offerId,
         @NotNull(message = "Visit time cannot be null")
+        @Future(message = "You cannot book a visit in the past")
         LocalDateTime visitTime,
         BigDecimal actualPrice,
         Integer actualBarberPercentage,

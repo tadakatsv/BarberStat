@@ -1,5 +1,6 @@
 package ua.chekmaryov.barber_stat.dto.visits;
 
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Builder
 public record VisitDtoUpdateRequest(
+        @Future(message = "You cannot book a visit in the past")
         LocalDateTime visitTime,
         @Positive( message = "Price can't be lower than 0")
         BigDecimal actualPrice,
