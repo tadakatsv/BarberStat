@@ -392,7 +392,7 @@ public class ClientControllerTest {
         when(clientService.findByStatusAndLastVisitDateBetween(any(ClientStatus.class),any(LocalDate.class),any(LocalDate.class),any(Pageable.class))).thenThrow(new BadRequestException("Start date (" + lastVisitDateAfter + ") cannot be after end date (" + lastVisitDateBefore + ")"));
 
         mockMvc.perform(get("/api/v1/clients/search/by-visit-date-and-status?clientStatus=ACTIVE&lastVisitDateAfter=2025-07-05&lastVisitDateBefore=2025-07-01"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
 
         verify(clientService).findByStatusAndLastVisitDateBetween(any(ClientStatus.class),any(LocalDate.class),any(LocalDate.class),any(Pageable.class));
     }
@@ -403,7 +403,7 @@ public class ClientControllerTest {
         when(clientService.findByStatusAndLastVisitDateBetween(any(ClientStatus.class),any(LocalDate.class),any(LocalDate.class),any(Pageable.class))).thenThrow(new BadRequestException("Search dates cannot be in the future. Today is " + LocalDate.now()));
 
         mockMvc.perform(get("/api/v1/clients/search/by-visit-date-and-status?clientStatus=ACTIVE&lastVisitDateAfter=2025-07-05&lastVisitDateBefore=2025-07-01"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
 
         verify(clientService).findByStatusAndLastVisitDateBetween(any(ClientStatus.class),any(LocalDate.class),any(LocalDate.class),any(Pageable.class));
     }
