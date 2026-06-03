@@ -10,10 +10,15 @@ import java.time.LocalDate;
 
 @Builder
 public record BarberDtoCreateRequest(
-    @NotBlank(message = "First name is required") String firstName,
-    @NotBlank(message = "Last name is required") String lastName,
-    @NotBlank(message = "Phone number is required") String phone,
-    @NotNull(message = "Birth date is required") LocalDate birthDate,
+    @NotBlank(message = "First name is required")
+    String firstName,
+    @NotBlank(message = "Last name is required")
+    String lastName,
+    @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "^\\d{9,12}$", message = "Invalid phone format")
+    String phone,
+    @NotNull(message = "Birth date is required")
+    LocalDate birthDate,
     BarberStatus status,
     BarberRole role,
     @Positive(message = "Salary percent cannot be less than 0")
