@@ -1,5 +1,6 @@
 package ua.chekmaryov.barber_stat.service.barbers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,11 +42,15 @@ public class BarberServiceImplTest {
     @InjectMocks
     private BarberServiceImpl barberService;
 
+    private Pageable pageable;
+
+    @BeforeEach
+    void setUp() {
+        pageable = PageRequest.of(0, 10); // Перша сторінка, 10 записів
+    }
+
     @Test
     public void getAll_ShouldReturnPageOfResponses_WhenBarbersExist(){
-        // 1. ARRANGE
-        Pageable pageable = PageRequest.of(0, 10); // Перша сторінка, 10 записів
-
         Barber barber = new Barber(1L,"Артур","Морган","380666666666",LocalDate.of(1868, Month.JUNE,22),BarberStatus.ACTIVE,BarberRole.TOP,50,null);
 
         Page<Barber> barberPage = new PageImpl<>(List.of(barber), pageable, 1);
@@ -80,8 +85,6 @@ public class BarberServiceImplTest {
     @Test
     public void getAll_ShouldReturnEmpty_WhenBarbersDontExist(){
         // 1. ARRANGE
-        Pageable pageable = PageRequest.of(0, 10); // Перша сторінка, 10 записів
-
         when(barberRepository.findAll(pageable)).thenReturn(Page.empty());
 
         // 2. ACT
@@ -380,8 +383,6 @@ public class BarberServiceImplTest {
     @Test
     public void findByFirstNameAndLastName_ShouldReturnPageOfResponses_WhenBarbersExist(){
         // 1. ARRANGE
-        Pageable pageable = PageRequest.of(0, 10);
-
         Barber barber= new Barber(1L,"Артур","Морган","380666666666",LocalDate.of(1868, Month.JUNE,22),BarberStatus.VACATION,BarberRole.TOP,50,null);
 
         Page<Barber> barberPage = new PageImpl<>(List.of(barber), pageable, 2);
@@ -416,8 +417,6 @@ public class BarberServiceImplTest {
     @Test
     public void findByFirstNameAndLastName_ShouldReturnEmpty_WhenBarbersDontExist(){
         // 1. ARRANGE
-        Pageable pageable = PageRequest.of(0, 10); // Перша сторінка, 10 записів
-
         when(barberRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase("Артур","Морган",pageable)).thenReturn(Page.empty());
 
         // 2. ACT
@@ -435,8 +434,6 @@ public class BarberServiceImplTest {
     @Test
     public void findByStatus_ShouldReturnPageOfResponses_WhenBarbersExist(){
         // 1. ARRANGE
-        Pageable pageable = PageRequest.of(0, 10);
-
         Barber barber= new Barber(1L,"Артур","Морган","380666666666",LocalDate.of(1868, Month.JUNE,22),BarberStatus.VACATION,BarberRole.TOP,50,null);
 
         Page<Barber> barberPage = new PageImpl<>(List.of(barber), pageable, 2);
