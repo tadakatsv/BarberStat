@@ -84,7 +84,7 @@ public class VisitsController {
             @RequestParam(name = "client_id") @Positive Long clientId,
             @RequestParam(name = "status") VisitStatus status,
             @ParameterObject @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
-        return service.findVisitByClient_IdAndStatus(clientId, status, pageable);
+        return service.findVisitsByClient_IdAndStatus(clientId, status, pageable);
     }
 
     @GetMapping("/search/by-client_id-and-visit-time-between")
