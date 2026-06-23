@@ -1,91 +1,59 @@
-//package ua.chekmaryov.barber_stat.controller;
-//
-//import jakarta.validation.Valid;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springdoc.core.annotations.ParameterObject;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.Pageable;
-//import org.springframework.data.domain.Sort;
-//import org.springframework.data.web.PageableDefault;
-//import org.springframework.format.annotation.DateTimeFormat;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.web.bind.annotation.*;
-//import ua.chekmaryov.barber_stat.dto.clients.ClientDtoCreateRequest;
-//import ua.chekmaryov.barber_stat.dto.clients.ClientDtoResponse;
-//import ua.chekmaryov.barber_stat.dto.clients.ClientDtoUpdateRequest;
-//import ua.chekmaryov.barber_stat.enums.ClientStatus;
-//import ua.chekmaryov.barber_stat.service.clients.ClientService;
-//
-//import java.time.LocalDate;
-//
-//@RestController
-//@Slf4j
-//@RequestMapping("/api/v1/clients")
-//public class ClientController {
-//
-//    private final ClientService clientService;
-//
-//    public ClientController(ClientService clientService) {
-//        this.clientService = clientService;
-//    }
-//
-//    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public ClientDtoResponse createClient(
-//            @Valid @RequestBody ClientDtoCreateRequest request){
-//        return clientService.create(request);
-//    }
-//
-//    @GetMapping
-//    public Page<ClientDtoResponse> getAllClients(
-//            @ParameterObject @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
-//        return clientService.getAll(pageable);
-//    }
-//
-//    @GetMapping("/{id}")
-//    public ClientDtoResponse getClientById(
-//            @PathVariable Long id){
-//        return clientService.getById(id);
-//    }
-//
-//    @PutMapping("/{id}")
-//    public ClientDtoResponse updateClientById(
-//            @PathVariable("id") Long id,
-//            @Valid @RequestBody ClientDtoUpdateRequest request){
-//        return clientService.updateById(id, request);
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    public ClientDtoResponse deleteClientById(
-//            @PathVariable("id") Long id){
-//        return clientService.deleteById(id);
-//    }
-//
-//    @GetMapping("/search/by-phone")
-//    public ClientDtoResponse getByPhone(
-//            @RequestParam("phone") String phone){
-//        return clientService.getByPhone(phone);
-//    }
-//
-//    @GetMapping("/search/by-first-name-and-last-name")
-//    public Page<ClientDtoResponse> getClientsByFirstNameAndLastName(
-//            @ParameterObject
-//            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-//            @RequestParam("firstName") String firstName,
-//            @RequestParam("lastName") String lastName
-//    ){
-//        return clientService.findByFirstNameAndLastName(firstName, lastName, pageable);
-//    }
-//
-//    @GetMapping("/search/by-visit-date-and-status")
-//    public Page<ClientDtoResponse> findByStatusAndLastVisitDateBetween(
-//            @ParameterObject
-//            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-//            @RequestParam("clientStatus") ClientStatus status,
-//            @RequestParam("lastVisitDateAfter") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate lastVisitDateAfter,
-//            @RequestParam("lastVisitDateBefore") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate lastVisitDateBefore
-//    ){
-//        return clientService.findByStatusAndLastVisitDateBetween(status,lastVisitDateAfter, lastVisitDateBefore, pageable);
-//    }
-//}
-//
+package ua.chekmaryov.barber_stat.controller;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import ua.chekmaryov.barber_stat.dto.clients.*;
+import ua.chekmaryov.barber_stat.service.clients.ClientFacade;
+
+@RestController
+@Slf4j
+@RequestMapping("/api/v1/clients")
+@RequiredArgsConstructor
+public class ClientController {
+
+    private final ClientFacade clientFacade;
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ClientDtoResponse createClient(
+            @Valid @RequestBody ClientDtoPostRequest request) {
+        return clientFacade.create(request);
+    }
+
+    @GetMapping
+    public Page<ClientDtoResponse> getAllClients(
+            @ParameterObject @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @ModelAttribute ClientSearchFilters clientSearchFilters) {
+        return clientFacade.getAll(pageable, clientSearchFilters);
+    }
+
+    @GetMapping("/{id}")
+    public ClientDtoResponse getClientById(
+            @PathVariable Long id) {
+        return clientFacade.getById(id);
+    }
+
+    @PatchMapping("/{id}")
+    public ClientDtoResponse patchClientById(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody ClientDtoPatchRequest request) {
+        return clientFacade.patchById(id, request);
+    }
+
+    @PutMapping
+    public ClientDtoResponse putById(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody ClientDtoPutRequest request
+    ) {
+        return clientFacade.updateById(id, request);
+    }
+}
+
