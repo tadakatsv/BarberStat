@@ -7,7 +7,7 @@ import ua.chekmaryov.barber_stat.enums.ClientStatus;
 import java.time.LocalDate;
 
 @Builder
-public record ClientDtoCreateRequest(
+public record ClientDtoPostRequest(
         @NotBlank(message = "First name is required")
         String firstName,
         @NotBlank(message = "Last name is required")
@@ -16,6 +16,7 @@ public record ClientDtoCreateRequest(
         @Pattern(regexp = "^\\d{9,12}$", message = "Invalid phone format")
         String phone,
         @NotNull(message = "Birth date is required")
+        @Past(message = "Birth date can't be in the future")
         LocalDate birthDate,
         ClientStatus status,
         @Past(message = "Last visit date can't be in the past")
