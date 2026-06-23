@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Builder
-public record VisitDtoUpdateRequest(
+public record VisitDtoPatchRequest(
         @Future(message = "You cannot book a visit in the past")
         LocalDateTime visitTime,
         @Positive( message = "Price can't be lower than 0")
