@@ -16,25 +16,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AlreadyExistsException.class)
     public ProblemDetail handleAlreadyExistsApiException(AlreadyExistsException exception) {
-        log.warn("Already exists! {}" , exception.getMessage());
-        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,exception.getMessage());
+        log.warn("Already exists! {}", exception.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ProblemDetail handleResourceNotFoundApiException(ResourceNotFoundException exception) {
-        log.warn("ResourceNotFoundException! {}" , exception.getMessage());
-        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,exception.getMessage());
+        log.warn("ResourceNotFoundException! {}", exception.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
     }
 
     @ExceptionHandler(BadRequestException.class)
     public ProblemDetail handleBadRequestApiException(BadRequestException exception) {
-        log.warn("BadRequestException! {}" , exception.getMessage());
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,exception.getMessage());
+        log.warn("BadRequestException! {}", exception.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGlobalException(Exception exception) {
-        log.error("Internal Server Error! Critical error!: {}" , exception.getMessage());
+        log.error("Internal Server Error! Critical error!: {}", exception.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error, check logs");
     }
 }

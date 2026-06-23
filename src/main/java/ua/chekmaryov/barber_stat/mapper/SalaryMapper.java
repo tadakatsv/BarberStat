@@ -19,8 +19,8 @@ public class SalaryMapper {
         return updateEntityFromDto(request, toUpdate);
     }
 
-    public Salary dtoToEntity(LocalDateTime newStart, LocalDateTime newEnd, Barber barber, BigDecimal sum){
-        return updateEntityFromDto(newStart,newEnd,barber,sum, new Salary());
+    public Salary dtoToEntity(LocalDateTime newStart, LocalDateTime newEnd, Barber barber, BigDecimal sum) {
+        return updateEntityFromDto(newStart, newEnd, barber, sum, new Salary());
     }
 
     private Salary updateEntityFromDto(LocalDateTime newStart, LocalDateTime newEnd, Barber barber, BigDecimal sum, Salary toUpdate) {
@@ -41,8 +41,8 @@ public class SalaryMapper {
 //    }
 
     private Salary updateEntityFromDto(SalaryDtoUpdateRequest request, Salary toUpdate) {
-        if(request.totalSum() != null) toUpdate.setTotalSum(request.totalSum());
-        if(request.status() != null) toUpdate.setStatus(request.status());
+        if (request.totalSum() != null) toUpdate.setTotalSum(request.totalSum());
+        if (request.status() != null) toUpdate.setStatus(request.status());
         return toUpdate;
     }
 

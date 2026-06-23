@@ -41,7 +41,7 @@ public class Barber {
     @Enumerated(EnumType.STRING)
     private BarberRole role;
 
-    @Column(name = "salary_percent",nullable = false)
+    @Column(name = "salary_percent", nullable = false)
     private Integer salaryPercent = 50;
 
     @Column(name = "notes")

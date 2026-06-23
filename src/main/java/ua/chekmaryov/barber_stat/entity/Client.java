@@ -35,7 +35,7 @@ public class Client {
     @Enumerated(EnumType.STRING)
     private ClientStatus status = ClientStatus.ACTIVE;
 
-    @Column(name = "last_visit_date",nullable = false)
+    @Column(name = "last_visit_date", nullable = false)
     private LocalDate lastVisitDate;
 
     @Column(name = "notes")

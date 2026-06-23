@@ -27,9 +27,9 @@ public class BarberOffering {
     @JoinColumn(name = "offer_id", nullable = false)
     private Offer offer;
 
-    @Column(name = "price",nullable = false)
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @Column(name = "custom_time",nullable = false)
+    @Column(name = "custom_time", nullable = false)
     private Integer customTime;
 }
