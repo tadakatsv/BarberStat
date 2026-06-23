@@ -7,8 +7,7 @@ import lombok.Builder;
 import java.math.BigDecimal;
 
 @Builder
-public record BarberOfferingDtoUpdateRequest(
-
+public record BarberOfferingDtoPutRequest(
         @NotNull(message = "Price is required")
         @Positive(message = "Price must be greater than zero")
         BigDecimal price,
