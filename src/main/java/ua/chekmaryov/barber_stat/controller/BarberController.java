@@ -38,19 +38,27 @@ public class BarberController {
         return barberFacade.getAll(pageable, searchParameters);
     }
 
+    @GetMapping
+    public Page<BarberDtoResponse> searchAllBarbers(
+            @ParameterObject @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @ModelAttribute BarberSearchFilters barberSearchFilters
+    ) {
+        return barberFacade.searchAll(pageable, barberSearchFilters);
+    }
+
     @GetMapping("/{id}")
-    public BarberDtoResponse getBarberById(@PathVariable Long id) {
+    public BarberDtoResponse getBarberById(@PathVariable @Positive Long id) {
         return barberFacade.getById(id);
     }
 
-    @PutMapping("/{id}")
-    public BarberDtoResponse updateBarberById(@PathVariable @Positive Long id, @RequestBody @Valid BarberDtoUpdateRequest request) {
-        return barberFacade.updateById(id, request);
+    @PatchMapping("/{id}")
+    public BarberDtoResponse patchBarberById(@PathVariable @Positive Long id, @RequestBody @Valid BarberDtoPatchRequest request) {
+        return barberFacade.patchBarberById(id, request);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteBarberById(@PathVariable @Positive Long id) {
-        barberFacade.deleteById(id);
+    @PutMapping("/{id}")
+    public BarberDtoResponse putBarberById(@PathVariable @Positive Long id, @RequestBody @Valid BarberDtoPutRequest request) {
+        return barberFacade.updateBarberById(id, request);
     }
 
 }
