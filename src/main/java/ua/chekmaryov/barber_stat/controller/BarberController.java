@@ -1,7 +1,6 @@
 package ua.chekmaryov.barber_stat.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +12,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ua.chekmaryov.barber_stat.dto.BarberSearchFilters;
-import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoCreateRequest;
-import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
-import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoUpdateRequest;
-import ua.chekmaryov.barber_stat.enums.BarberStatus;
+import ua.chekmaryov.barber_stat.dto.barbers.*;
 import ua.chekmaryov.barber_stat.service.barbers.BarberFacade;
 
 @Validated
@@ -32,7 +27,7 @@ public class BarberController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BarberDtoResponse createBarber(
-            @Valid @RequestBody BarberDtoCreateRequest request) {
+            @Valid @RequestBody BarberDtoPostRequest request) {
         return barberFacade.create(request);
     }
 
