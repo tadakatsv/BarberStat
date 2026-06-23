@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Builder
-public record VisitDtoCreateRequest(
+public record VisitDtoPostRequest(
         @NotNull(message = "Client id cannot be null")
         Long clientId,
         @NotNull(message = "Barber id cannot be null")
