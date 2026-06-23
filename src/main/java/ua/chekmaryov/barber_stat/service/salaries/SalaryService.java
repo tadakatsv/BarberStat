@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 
 @Service
 @Slf4j
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SalaryService {
     private final SalaryMapper mapper;
@@ -29,70 +30,53 @@ public class SalaryService {
     private final VisitRepository visitRepository;
     private final BarberRepository barberRepository;
 
-    
-    @Transactional(readOnly = true)
     public Page<SalaryDtoResponse> getAll(Pageable pageable) {
         Page<Salary> allSalaries = salaryRepository.findAll(pageable);
         return allSalaries.map(mapper::toResponse);
     }
 
-    @Transactional(readOnly = true)
     public SalaryDtoResponse getById(Long id) {
         Salary neededSalary = salaryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No salary record by this id:" + id));
         return mapper.toResponse(neededSalary);
     }
 
-    
+
     @Transactional
     public SalaryDtoResponse updateById(Long id, SalaryDtoUpdateRequest request) {
         Salary neededSalary = salaryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No salary record by this id:" + id));
-        Salary updated = salaryRepository.save(mapper.dtoUpdateToEntity(request,neededSalary));
+        Salary updated = salaryRepository.save(mapper.dtoUpdateToEntity(request, neededSalary));
         return mapper.toResponse(updated);
     }
 
-    
-    @Transactional(readOnly = true)
-    public Page<SalaryDtoResponse> findByBarber_Id(Long barberId, Pageable pageable) {
-        log.info("Searching for barber with id: {}" ,barberId);
-        if(!barberRepository.existsById(barberId)){
-            throw new ResourceNotFoundException("Barber not found with id: " + barberId);
-        }
-        Page<Salary> neededSalaries = salaryRepository.findSalariesByBarber_Id(barberId, pageable);
-        log.debug("Needed salaries was found quantity: " + neededSalaries.getTotalElements());
-        return neededSalaries.map(mapper::toResponse);
-    }
 
-    
-    @Transactional(readOnly = true)
     public SalaryDtoResponse checkSumSalaryForBarber(Long barberId, LocalDateTime newStart, LocalDateTime newEnd) {
-        if (newStart.isAfter(newEnd)){
+        if (newStart.isAfter(newEnd)) {
             throw new BadRequestException("Start date (" + newStart + ") cannot be after end date (" + newEnd + ")");
         }
-        log.info("Searching for barber with id: {}" ,barberId);
+        log.info("Searching for barber with id: {}", barberId);
         Barber barber = barberRepository.findById(barberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Barber not found with id: " + barberId));
         log.debug("Successfully found barber: {} (ID: {})", barber.getLastName(), barberId);
-        BigDecimal sumSalary = visitRepository.sumSalaryForBarber(barberId,newStart,newEnd)
+        BigDecimal sumSalary = visitRepository.sumSalaryForBarber(barberId, newStart, newEnd)
                 .orElse(BigDecimal.ZERO);
-        Salary salary = mapper.dtoToEntity(newStart,newEnd,barber,sumSalary);
+        Salary salary = mapper.dtoToEntity(newStart, newEnd, barber, sumSalary);
         return mapper.toResponse(salary);
     }
 
-    
-    @Transactional
+
     public SalaryDtoResponse saveSumSalaryForBarber(Long barberId, LocalDateTime newStart, LocalDateTime newEnd) {
-        if (newStart.isAfter(newEnd)){
+        if (newStart.isAfter(newEnd)) {
             throw new BadRequestException("Start date (" + newStart + ") cannot be after end date (" + newEnd + ")");
         }
-        log.info("Searching for barber with id: {}" ,barberId);
+        log.info("Searching for barber with id: {}", barberId);
         Barber barber = barberRepository.findById(barberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Barber not found with id: " + barberId));
         log.debug("Successfully found barber: {} (ID: {})", barber.getLastName(), barberId);
-        BigDecimal sumSalary = visitRepository.sumSalaryForBarber(barberId,newStart,newEnd)
+        BigDecimal sumSalary = visitRepository.sumSalaryForBarber(barberId, newStart, newEnd)
                 .orElse(BigDecimal.ZERO);
-        Salary salary = salaryRepository.save(mapper.dtoToEntity(newStart,newEnd,barber,sumSalary));
+        Salary salary = salaryRepository.save(mapper.dtoToEntity(newStart, newEnd, barber, sumSalary));
         return mapper.toResponse(salary);
     }
 }
