@@ -1,9 +1,9 @@
-package ua.chekmaryov.barber_stat.repository;
+package ua.chekmaryov.barber_stat.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
-import ua.chekmaryov.barber_stat.entity.BarberOffering;
+import ua.chekmaryov.barber_stat.persistence.entity.BarberOffering;
 
 import java.util.Optional;
 

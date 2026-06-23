@@ -1,4 +1,4 @@
-package ua.chekmaryov.barber_stat.entity;
+package ua.chekmaryov.barber_stat.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

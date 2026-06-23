@@ -5,9 +5,9 @@ import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoPatchReques
 import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoPostRequest;
 import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoResponse;
 import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoPutRequest;
-import ua.chekmaryov.barber_stat.entity.Barber;
-import ua.chekmaryov.barber_stat.entity.BarberOffering;
-import ua.chekmaryov.barber_stat.entity.Offer;
+import ua.chekmaryov.barber_stat.persistence.entity.Barber;
+import ua.chekmaryov.barber_stat.persistence.entity.BarberOffering;
+import ua.chekmaryov.barber_stat.persistence.entity.Offer;
 
 @Component
 public class BarberOfferingMapper {

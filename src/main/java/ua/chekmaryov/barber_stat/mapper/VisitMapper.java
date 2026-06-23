@@ -5,7 +5,11 @@ import ua.chekmaryov.barber_stat.dto.visits.VisitDtoPostRequest;
 import ua.chekmaryov.barber_stat.dto.visits.VisitDtoPutRequest;
 import ua.chekmaryov.barber_stat.dto.visits.VisitDtoResponse;
 import ua.chekmaryov.barber_stat.dto.visits.VisitDtoPatchRequest;
-import ua.chekmaryov.barber_stat.entity.*;
+import ua.chekmaryov.barber_stat.persistence.entity.Barber;
+import ua.chekmaryov.barber_stat.persistence.entity.BarberOffering;
+import ua.chekmaryov.barber_stat.persistence.entity.Client;
+import ua.chekmaryov.barber_stat.persistence.entity.Offer;
+import ua.chekmaryov.barber_stat.persistence.entity.Visit;
 
 @Component
 public class VisitMapper {

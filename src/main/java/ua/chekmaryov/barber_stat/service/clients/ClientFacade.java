@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ua.chekmaryov.barber_stat.dto.clients.*;
-import ua.chekmaryov.barber_stat.entity.Client;
+import ua.chekmaryov.barber_stat.persistence.entity.Client;
 import ua.chekmaryov.barber_stat.mapper.ClientMapper;
 
 //нужен ли @Transactional

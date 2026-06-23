@@ -10,13 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoPatchRequest;
 import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoPostRequest;
 import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoPutRequest;
-import ua.chekmaryov.barber_stat.entity.Barber;
-import ua.chekmaryov.barber_stat.entity.BarberOffering;
-import ua.chekmaryov.barber_stat.entity.Offer;
+import ua.chekmaryov.barber_stat.persistence.entity.Barber;
+import ua.chekmaryov.barber_stat.persistence.entity.BarberOffering;
+import ua.chekmaryov.barber_stat.persistence.entity.Offer;
 import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
 import ua.chekmaryov.barber_stat.mapper.BarberOfferingMapper;
-import ua.chekmaryov.barber_stat.repository.BarberOfferingRepository;
+import ua.chekmaryov.barber_stat.persistence.repository.BarberOfferingRepository;
 
 @Slf4j
 @Service

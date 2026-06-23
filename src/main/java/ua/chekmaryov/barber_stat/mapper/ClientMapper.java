@@ -5,7 +5,7 @@ import ua.chekmaryov.barber_stat.dto.clients.ClientDtoPostRequest;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoPutRequest;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoResponse;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoPatchRequest;
-import ua.chekmaryov.barber_stat.entity.Client;
+import ua.chekmaryov.barber_stat.persistence.entity.Client;
 
 @Component
 public class ClientMapper {

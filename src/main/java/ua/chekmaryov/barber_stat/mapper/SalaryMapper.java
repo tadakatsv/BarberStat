@@ -3,8 +3,8 @@ package ua.chekmaryov.barber_stat.mapper;
 import org.springframework.stereotype.Component;
 import ua.chekmaryov.barber_stat.dto.salaries.SalaryDtoResponse;
 import ua.chekmaryov.barber_stat.dto.salaries.SalaryDtoUpdateRequest;
-import ua.chekmaryov.barber_stat.entity.Barber;
-import ua.chekmaryov.barber_stat.entity.Salary;
+import ua.chekmaryov.barber_stat.persistence.entity.Barber;
+import ua.chekmaryov.barber_stat.persistence.entity.Salary;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

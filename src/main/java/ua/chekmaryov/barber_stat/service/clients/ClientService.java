@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoPostRequest;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoPatchRequest;
 import ua.chekmaryov.barber_stat.dto.clients.ClientDtoPutRequest;
-import ua.chekmaryov.barber_stat.entity.Client;
+import ua.chekmaryov.barber_stat.persistence.entity.Client;
 import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
 import ua.chekmaryov.barber_stat.mapper.ClientMapper;
-import ua.chekmaryov.barber_stat.repository.ClientRepository;
+import ua.chekmaryov.barber_stat.persistence.repository.ClientRepository;
 
 import java.util.Objects;
 

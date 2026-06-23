@@ -5,7 +5,7 @@ import ua.chekmaryov.barber_stat.dto.offers.OfferDtoPatchRequest;
 import ua.chekmaryov.barber_stat.dto.offers.OfferDtoPostRequest;
 import ua.chekmaryov.barber_stat.dto.offers.OfferDtoPutRequest;
 import ua.chekmaryov.barber_stat.dto.offers.OfferDtoResponse;
-import ua.chekmaryov.barber_stat.entity.Offer;
+import ua.chekmaryov.barber_stat.persistence.entity.Offer;
 
 @Component
 public class OfferMapper {

@@ -8,13 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoPostRequest;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoPatchRequest;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoPutRequest;
-import ua.chekmaryov.barber_stat.entity.Barber;
+import ua.chekmaryov.barber_stat.persistence.entity.Barber;
 import ua.chekmaryov.barber_stat.enums.BarberRole;
 import ua.chekmaryov.barber_stat.enums.BarberStatus;
 import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
 import ua.chekmaryov.barber_stat.mapper.BarberMapper;
-import ua.chekmaryov.barber_stat.repository.BarberRepository;
+import ua.chekmaryov.barber_stat.persistence.repository.BarberRepository;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;

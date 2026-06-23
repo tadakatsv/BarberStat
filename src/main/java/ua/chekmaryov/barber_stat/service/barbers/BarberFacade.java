@@ -10,7 +10,7 @@ import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoPostRequest;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoPutRequest;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
 import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoPatchRequest;
-import ua.chekmaryov.barber_stat.entity.Barber;
+import ua.chekmaryov.barber_stat.persistence.entity.Barber;
 import ua.chekmaryov.barber_stat.enums.BarberRole;
 import ua.chekmaryov.barber_stat.enums.BarberStatus;
 import ua.chekmaryov.barber_stat.mapper.BarberMapper;
