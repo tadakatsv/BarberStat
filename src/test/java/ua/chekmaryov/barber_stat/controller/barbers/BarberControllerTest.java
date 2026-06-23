@@ -12,12 +12,12 @@
 //import org.springframework.test.context.bean.override.mockito.MockitoBean;
 //import org.springframework.test.web.servlet.MockMvc;
 //import tools.jackson.databind.ObjectMapper;
-//import ua.chekmaryov.barber_stat.controller.BarberController;
+//import ua.chekmaryov.barber_stat.barbers.BarberController;
 //import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoCreateRequest;
-//import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
+//import ua.chekmaryov.barber_stat.barbers.dto.BarberDtoResponse;
 //import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoUpdateRequest;
-//import ua.chekmaryov.barber_stat.enums.BarberRole;
-//import ua.chekmaryov.barber_stat.enums.BarberStatus;
+//import ua.chekmaryov.barber_stat.barberofferings.domain.BarberRole;
+//import ua.chekmaryov.barber_stat.barberofferings.domain.BarberStatus;
 //import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 //import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
 //import ua.chekmaryov.barber_stat.service.barbers.BarberServiceImpl;

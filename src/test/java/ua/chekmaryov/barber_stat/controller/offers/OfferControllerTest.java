@@ -12,12 +12,12 @@
 //import org.springframework.test.context.bean.override.mockito.MockitoBean;
 //import org.springframework.test.web.servlet.MockMvc;
 //import tools.jackson.databind.ObjectMapper;
-//import ua.chekmaryov.barber_stat.controller.OfferController;
+//import ua.chekmaryov.barber_stat.app.offers.OfferController;
 //import ua.chekmaryov.barber_stat.dto.offers.OfferDtoRequest;
-//import ua.chekmaryov.barber_stat.dto.offers.OfferDtoResponse;
+//import ua.chekmaryov.barber_stat.app.offers.dto.OfferDtoResponse;
 //import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 //import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
-//import ua.chekmaryov.barber_stat.service.offers.OfferService;
+//import ua.chekmaryov.barber_stat.app.offers.service.OfferService;
 //
 //import java.util.List;
 //

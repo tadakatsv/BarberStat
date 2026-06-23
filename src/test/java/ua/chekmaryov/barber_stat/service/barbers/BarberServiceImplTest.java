@@ -11,14 +11,14 @@
 //import org.springframework.data.domain.PageRequest;
 //import org.springframework.data.domain.Pageable;
 //import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoCreateRequest;
-//import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoResponse;
+//import ua.chekmaryov.barber_stat.barbers.dto.BarberDtoResponse;
 //import ua.chekmaryov.barber_stat.dto.barbers.BarberDtoUpdateRequest;
 //import ua.chekmaryov.barber_stat.entity.Barber;
-//import ua.chekmaryov.barber_stat.enums.BarberRole;
-//import ua.chekmaryov.barber_stat.enums.BarberStatus;
+//import ua.chekmaryov.barber_stat.barberofferings.domain.BarberRole;
+//import ua.chekmaryov.barber_stat.barberofferings.domain.BarberStatus;
 //import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 //import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
-//import ua.chekmaryov.barber_stat.mapper.BarberMapper;
+//import ua.chekmaryov.barber_stat.barbers.BarberMapper;
 //import ua.chekmaryov.barber_stat.repository.BarberRepository;
 //
 //import java.time.LocalDate;

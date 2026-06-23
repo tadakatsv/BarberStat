@@ -12,15 +12,15 @@
 //import org.springframework.test.context.bean.override.mockito.MockitoBean;
 //import org.springframework.test.web.servlet.MockMvc;
 //import tools.jackson.databind.ObjectMapper;
-//import ua.chekmaryov.barber_stat.controller.ClientController;
+//import ua.chekmaryov.barber_stat.clients.ClientController;
 //import ua.chekmaryov.barber_stat.dto.clients.ClientDtoCreateRequest;
-//import ua.chekmaryov.barber_stat.dto.clients.ClientDtoResponse;
+//import ua.chekmaryov.barber_stat.clients.dto.ClientDtoResponse;
 //import ua.chekmaryov.barber_stat.dto.clients.ClientDtoUpdateRequest;
-//import ua.chekmaryov.barber_stat.enums.ClientStatus;
+//import ua.chekmaryov.barber_stat.clients.domain.ClientStatus;
 //import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 //import ua.chekmaryov.barber_stat.exception.BadRequestException;
 //import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
-//import ua.chekmaryov.barber_stat.service.clients.ClientService;
+//import ua.chekmaryov.barber_stat.clients.service.ClientService;
 //
 //import java.time.LocalDate;
 //import java.time.Month;

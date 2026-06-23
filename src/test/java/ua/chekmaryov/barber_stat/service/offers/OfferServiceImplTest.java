@@ -11,11 +11,11 @@
 //import org.springframework.data.domain.PageRequest;
 //import org.springframework.data.domain.Pageable;
 //import ua.chekmaryov.barber_stat.dto.offers.OfferDtoRequest;
-//import ua.chekmaryov.barber_stat.dto.offers.OfferDtoResponse;
+//import ua.chekmaryov.barber_stat.app.offers.dto.OfferDtoResponse;
 //import ua.chekmaryov.barber_stat.entity.Offer;
 //import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 //import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
-//import ua.chekmaryov.barber_stat.mapper.OfferMapper;
+//import ua.chekmaryov.barber_stat.app.offers.OfferMapper;
 //import ua.chekmaryov.barber_stat.repository.OfferRepository;
 //
 //import java.util.Collections;

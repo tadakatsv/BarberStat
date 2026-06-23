@@ -1,0 +1,93 @@
+package ua.chekmaryov.barber_stat.app.visits;
+
+import org.springframework.stereotype.Component;
+import ua.chekmaryov.barber_stat.app.visits.dto.VisitDtoPostRequest;
+import ua.chekmaryov.barber_stat.app.visits.dto.VisitDtoPutRequest;
+import ua.chekmaryov.barber_stat.app.visits.dto.VisitDtoResponse;
+import ua.chekmaryov.barber_stat.app.visits.dto.VisitDtoPatchRequest;
+import ua.chekmaryov.barber_stat.app.barbers.persistence.Barber;
+import ua.chekmaryov.barber_stat.app.barberofferings.persistence.BarberOffering;
+import ua.chekmaryov.barber_stat.app.clients.persistence.Client;
+import ua.chekmaryov.barber_stat.app.offers.persistence.Offer;
+import ua.chekmaryov.barber_stat.app.visits.persistence.Visit;
+
+@Component
+public class VisitMapper {
+    public Visit dtoToEntity(VisitDtoPostRequest request, Client client, Barber barber, Offer offer, BarberOffering barberOffering) {
+        return updateEntityFromDto(request, client, barber, offer, barberOffering, new Visit());
+    }
+
+    public Visit dtoToEntity(VisitDtoPatchRequest request, Visit toUpdate) {
+        return updateEntityFromDto(request, toUpdate);
+    }
+
+    public Visit dtoToEntity(VisitDtoPutRequest request, Visit toUpdate) {
+        return updateEntityFromDto(request, toUpdate);
+    }
+
+    private Visit updateEntityFromDto(VisitDtoPostRequest request, Client client, Barber barber, Offer offer, BarberOffering barberOffering, Visit toUpdate) {
+        toUpdate.setClient(client);
+        toUpdate.setBarber(barber);
+        toUpdate.setOffer(offer);
+        toUpdate.setVisitTime(request.visitTime());
+        if (request.actualPrice() == null) {
+            toUpdate.setActualPrice(barberOffering.getPrice());
+        } else {
+            toUpdate.setActualPrice(request.actualPrice());
+        }
+        if (request.actualBarberPercentage() == null) {
+            toUpdate.setActualBarberPercentage(barber.getSalaryPercent());
+        } else {
+            toUpdate.setActualBarberPercentage(request.actualBarberPercentage());
+        }
+        if (request.status() != null) toUpdate.setStatus(request.status());
+        if (request.durationMinutes() == null) {
+            toUpdate.setDurationMinutes(barberOffering.getCustomTime());
+        } else {
+            toUpdate.setDurationMinutes(request.durationMinutes());
+        }
+        toUpdate.setNotes(request.notes());
+        return toUpdate;
+    }
+
+    private Visit updateEntityFromDto(VisitDtoPatchRequest request, Visit toUpdate) {
+        if (request.visitTime() != null) toUpdate.setVisitTime(request.visitTime());
+        if (request.actualPrice() != null) toUpdate.setActualPrice(request.actualPrice());
+        if (request.actualBarberPercentage() != null)
+            toUpdate.setActualBarberPercentage(request.actualBarberPercentage());
+        if (request.status() != null) toUpdate.setStatus(request.status());
+        if (request.durationMinutes() != null) toUpdate.setDurationMinutes(request.durationMinutes());
+        if (request.notes() != null && !request.notes().isBlank()) toUpdate.setNotes(request.notes());
+        return toUpdate;
+    }
+
+    private Visit updateEntityFromDto(VisitDtoPutRequest request, Visit toUpdate) {
+        toUpdate.setVisitTime(request.visitTime());
+        toUpdate.setActualPrice(request.actualPrice());
+        toUpdate.setActualBarberPercentage(request.actualBarberPercentage());
+        toUpdate.setStatus(request.status());
+        toUpdate.setDurationMinutes(request.durationMinutes());
+        toUpdate.setNotes(request.notes());
+        return toUpdate;
+    }
+
+    public VisitDtoResponse toResponse(Visit visit) {
+        if (visit == null) return null;
+        return VisitDtoResponse.builder()
+                .id(visit.getId())
+                .clientId(visit.getClient().getId())
+                .clientFullName(visit.getClient().getFirstName() + " " + visit.getClient().getLastName())
+                .barberId(visit.getBarber().getId())
+                .barberFullName(visit.getBarber().getFirstName() + " " + visit.getBarber().getLastName())
+                .offerId(visit.getOffer().getId())
+                .offerName(visit.getOffer().getName())
+                .visitTime(visit.getVisitTime())
+                .actualPrice(visit.getActualPrice())
+                .actualBarberPercentage(visit.getActualBarberPercentage())
+                .status(visit.getStatus())
+                .durationMinutes(visit.getDurationMinutes())
+                .notes(visit.getNotes())
+                .build();
+    }
+
+}

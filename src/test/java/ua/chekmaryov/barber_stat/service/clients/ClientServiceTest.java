@@ -11,12 +11,12 @@
 //import org.springframework.data.domain.PageRequest;
 //import org.springframework.data.domain.Pageable;
 //import ua.chekmaryov.barber_stat.dto.clients.ClientDtoCreateRequest;
-//import ua.chekmaryov.barber_stat.dto.clients.ClientDtoResponse;
+//import ua.chekmaryov.barber_stat.clients.dto.ClientDtoResponse;
 //import ua.chekmaryov.barber_stat.dto.clients.ClientDtoUpdateRequest;
 //import ua.chekmaryov.barber_stat.entity.Client;
-//import ua.chekmaryov.barber_stat.enums.ClientStatus;
+//import ua.chekmaryov.barber_stat.clients.domain.ClientStatus;
 //import ua.chekmaryov.barber_stat.exception.BadRequestException;
-//import ua.chekmaryov.barber_stat.mapper.ClientMapper;
+//import ua.chekmaryov.barber_stat.clients.ClientMapper;
 //import ua.chekmaryov.barber_stat.repository.ClientRepository;
 //import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 //import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;

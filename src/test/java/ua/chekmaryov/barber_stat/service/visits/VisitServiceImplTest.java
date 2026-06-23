@@ -11,17 +11,17 @@
 //import org.springframework.data.domain.PageRequest;
 //import org.springframework.data.domain.Pageable;
 //import ua.chekmaryov.barber_stat.dto.visits.VisitDtoCreateRequest;
-//import ua.chekmaryov.barber_stat.dto.visits.VisitDtoResponse;
+//import ua.chekmaryov.barber_stat.app.visits.dto.VisitDtoResponse;
 //import ua.chekmaryov.barber_stat.dto.visits.VisitDtoUpdateRequest;
 //import ua.chekmaryov.barber_stat.entity.*;
-//import ua.chekmaryov.barber_stat.enums.BarberRole;
-//import ua.chekmaryov.barber_stat.enums.BarberStatus;
-//import ua.chekmaryov.barber_stat.enums.ClientStatus;
-//import ua.chekmaryov.barber_stat.enums.VisitStatus;
+//import ua.chekmaryov.barber_stat.barberofferings.domain.BarberRole;
+//import ua.chekmaryov.barber_stat.barberofferings.domain.BarberStatus;
+//import ua.chekmaryov.barber_stat.clients.domain.ClientStatus;
+//import ua.chekmaryov.barber_stat.app.visits.domain.VisitStatus;
 //import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 //import ua.chekmaryov.barber_stat.exception.BadRequestException;
 //import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
-//import ua.chekmaryov.barber_stat.mapper.VisitMapper;
+//import ua.chekmaryov.barber_stat.app.visits.VisitMapper;
 //import ua.chekmaryov.barber_stat.repository.*;
 //
 //import java.math.BigDecimal;
