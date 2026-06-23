@@ -7,11 +7,13 @@ import lombok.Builder;
 import java.math.BigDecimal;
 
 @Builder
-public record BarberOfferingDtoCreateRequest(
+public record BarberOfferingDtoPostRequest(
         @NotNull(message = "Barber ID is required")
+        @Positive(message = "Price must be greater than zero")
         Long barberId,
 
         @NotNull(message = "Offer ID is required")
+        @Positive(message = "Price must be greater than zero")
         Long offerId,
 
         @NotNull(message = "Price is required")
