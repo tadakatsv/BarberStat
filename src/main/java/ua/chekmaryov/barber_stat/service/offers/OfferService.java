@@ -1,13 +1,15 @@
 package ua.chekmaryov.barber_stat.service.offers;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import ua.chekmaryov.barber_stat.dto.offers.OfferDtoRequest;
-import ua.chekmaryov.barber_stat.dto.offers.OfferDtoResponse;
+import org.springframework.transaction.annotation.Transactional;
+import ua.chekmaryov.barber_stat.dto.offers.OfferDtoPatchRequest;
+import ua.chekmaryov.barber_stat.dto.offers.OfferDtoPostRequest;
+import ua.chekmaryov.barber_stat.dto.offers.OfferDtoPutRequest;
 import ua.chekmaryov.barber_stat.entity.Offer;
 import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
@@ -17,13 +19,14 @@ import ua.chekmaryov.barber_stat.repository.OfferRepository;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class OfferService {
 
     private final OfferRepository offerRepository;
     private final OfferMapper offerMapper;
 
     @Transactional
-    public Offer create(OfferDtoRequest request) {
+    public Offer create(OfferDtoPostRequest request) {
         log.info("Request to make new offer {}", request.name());
         if (offerRepository.existsOfferByName(request.name().trim())) {
             throw new AlreadyExistsException("Offer by name" + request.name() + "already exists");
@@ -33,17 +36,15 @@ public class OfferService {
         return offer;
     }
 
-    
-    @Transactional
-    public Page<OfferDtoResponse> getAll(Pageable pageable) {
+
+    public Page<Offer> getAll(Pageable pageable, Specification<Offer> spec) {
         log.info("Request to get all offers");
-        Page<Offer> allOffers = offerRepository.findAll(pageable);
+        Page<Offer> allOffers = offerRepository.findAll(spec, pageable);
         log.debug("Retrieved {} records from database", allOffers.getTotalElements());
-        return allOffers.map(offerMapper::toResponse);
+        return allOffers;
     }
 
-    
-    @Transactional
+
     public Offer getById(Long id) {
         log.info("Request to find offer with {} id", id);
         Offer offer = offerRepository.findById(id)
@@ -52,26 +53,31 @@ public class OfferService {
         return offer;
     }
 
-    
     @Transactional
-    public Offer updateById(Long id, OfferDtoRequest request) {
+    public Offer updateById(Long id, OfferDtoPutRequest request) {
+        log.info("Updating offer with ID: {}", id);
+        if (!offerRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Offer not found with id: " + id);
+        }
+        if (offerRepository.existsOfferByName(request.name().trim())) {
+            throw new AlreadyExistsException("Offer by name" + request.name() + "already exists");
+        }
+        Offer updated = offerRepository.save(offerMapper.dtoToEntity(request, id));
+        log.debug("Offer ID {} successfully updated", id);
+        return updated;
+    }
+
+    @Transactional
+    public Offer patchById(Long id, OfferDtoPatchRequest request) {
         log.info("Updating offer with ID: {}", id);
         Offer offer = offerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Offer not found with id: " + id));
         if (offerRepository.existsOfferByName(request.name().trim())) {
             throw new AlreadyExistsException("Offer by name" + request.name() + "already exists");
         }
-        Offer updated = offerRepository.save(offerMapper.dtoUpdateToEntity(request, offer));
+        Offer updated = offerRepository.save(offerMapper.dtoToEntity(request, offer));
         log.debug("Offer ID {} successfully updated", id);
-        return offer;
+        return updated;
     }
 
-    
-    @Transactional
-    public Page<OfferDtoResponse> findByName(String name, Pageable pageable) {
-        log.info("Request to find offer {}", name);
-        Page<Offer> offers = offerRepository.findByNameContainingIgnoreCase(name, pageable);
-        log.debug("Was found {} element(s)", offers.getTotalElements());
-        return offers.map(offerMapper::toResponse);
-    }
 }
