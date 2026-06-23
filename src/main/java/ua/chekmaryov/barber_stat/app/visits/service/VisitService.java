@@ -12,6 +12,8 @@ import ua.chekmaryov.barber_stat.app.visits.dto.VisitDtoPatchRequest;
 import ua.chekmaryov.barber_stat.app.visits.dto.VisitDtoPutRequest;
 import ua.chekmaryov.barber_stat.app.clients.domain.ClientStatus;
 import ua.chekmaryov.barber_stat.app.visits.domain.VisitStatus;
+import ua.chekmaryov.barber_stat.app.visits.dto.VisitSearchFilters;
+import ua.chekmaryov.barber_stat.app.visits.persistence.VisitSpecifications;
 import ua.chekmaryov.barber_stat.exception.AlreadyExistsException;
 import ua.chekmaryov.barber_stat.exception.BadRequestException;
 import ua.chekmaryov.barber_stat.exception.ResourceNotFoundException;
@@ -50,28 +52,12 @@ public class VisitService {
         if (visitRepository.hasOverlappingVisit(barber.getId(), request.visitTime(), visitTimeEnd)) {
             throw new AlreadyExistsException("Barber already booked on this time " + request.visitTime());
         }
-        Visit visit = visitRepository.save(mapper.dtoToEntity(request, client, barber, offer, barberOffering));
-        return visit;
+        return visitRepository.save(mapper.dtoToEntity(request, client, barber, offer, barberOffering));
     }
 
-//    @Transactional
-//    public Page<Visit> getAll(VisitStatus status, LocalDateTime visitTimeStart, LocalDateTime visitTimeEnd, Pageable pageable) {
-//        if (visitTimeStart.isAfter(visitTimeEnd)) {
-//            throw new BadRequestException("Start date (" + visitTimeStart + ") cannot be after end date (" + visitTimeEnd + ")");
-//        }
-//        log.info("Attempt to find visits with status {} between {} and {}", status, visitTimeStart, visitTimeEnd);
-//        Page<Visit> neededVisits = visitRepository.findVisitsByStatusAndVisitTimeBetween(status, visitTimeStart, visitTimeEnd, pageable);
-//        log.debug("Found {} visits with status {} between {} and {}", neededVisits.getNumberOfElements(), status, visitTimeStart, visitTimeEnd);
-//        return neededVisits;
-//    }
-
-    public Page<Visit> getAll(Specification<Visit> spec, Pageable pageable) {
-        //поставил её в Facade, но может лучше всё таки в service ?
-//        if (visitTimeStart.isAfter(visitTimeEnd)) {
-//            throw new BadRequestException("Start date (" + visitTimeStart + ") cannot be after end date (" + visitTimeEnd + ")");
-//        }
-        Page<Visit> neededVisits = visitRepository.findAll(spec, pageable);
-        return neededVisits;
+    public Page<Visit> getAll(VisitSearchFilters filters, Pageable pageable) {
+        Specification<Visit> visitSpecification = VisitSpecifications.bySearchFilters(filters);
+        return visitRepository.findAll(visitSpecification, pageable);
     }
 
     public Visit getById(Long id) {
