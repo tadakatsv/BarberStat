@@ -1,24 +1,29 @@
 package ua.chekmaryov.barber_stat.mapper;
 
 import org.springframework.stereotype.Component;
-import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoCreateRequest;
+import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoPatchRequest;
+import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoPostRequest;
 import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoResponse;
-import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoUpdateRequest;
+import ua.chekmaryov.barber_stat.dto.barberOffering.BarberOfferingDtoPutRequest;
 import ua.chekmaryov.barber_stat.entity.Barber;
 import ua.chekmaryov.barber_stat.entity.BarberOffering;
 import ua.chekmaryov.barber_stat.entity.Offer;
 
 @Component
 public class BarberOfferingMapper {
-    public BarberOffering dtoToEntity(BarberOfferingDtoCreateRequest request,Barber barber,Offer offer){
-        return updateEntityFromDto(request,barber,offer, new BarberOffering());
+    public BarberOffering dtoToEntity(BarberOfferingDtoPostRequest request, Barber barber, Offer offer) {
+        return updateEntityFromDto(request, barber, offer, new BarberOffering());
     }
 
-    public BarberOffering dtoUpdateToEntity(BarberOfferingDtoUpdateRequest request, BarberOffering toUpdate) {
+    public BarberOffering dtoUpdateToEntity(BarberOfferingDtoPatchRequest request, BarberOffering toUpdate) {
         return updateEntityFromDto(request, toUpdate);
     }
 
-    private BarberOffering updateEntityFromDto(BarberOfferingDtoCreateRequest request,Barber barber,Offer offer, BarberOffering toUpdate) {
+    public BarberOffering dtoUpdateToEntity(BarberOfferingDtoPutRequest request, BarberOffering toUpdate) {
+        return updateEntityFromDto(request, toUpdate);
+    }
+
+    private BarberOffering updateEntityFromDto(BarberOfferingDtoPostRequest request, Barber barber, Offer offer, BarberOffering toUpdate) {
         toUpdate.setBarber(barber);
         toUpdate.setOffer(offer);
         toUpdate.setPrice(request.price());
@@ -26,9 +31,15 @@ public class BarberOfferingMapper {
         return toUpdate;
     }
 
-    private BarberOffering updateEntityFromDto(BarberOfferingDtoUpdateRequest request, BarberOffering toUpdate) {
-        if(request.price() != null) toUpdate.setPrice(request.price());
-        if(request.customTime() != null) toUpdate.setCustomTime(request.customTime());
+    private BarberOffering updateEntityFromDto(BarberOfferingDtoPutRequest request, BarberOffering toUpdate) {
+        toUpdate.setPrice(request.price());
+        toUpdate.setCustomTime(request.customTime());
+        return toUpdate;
+    }
+
+    private BarberOffering updateEntityFromDto(BarberOfferingDtoPatchRequest request, BarberOffering toUpdate) {
+        if (request.price() != null) toUpdate.setPrice(request.price());
+        if (request.customTime() != null) toUpdate.setCustomTime(request.customTime());
         return toUpdate;
     }
 
